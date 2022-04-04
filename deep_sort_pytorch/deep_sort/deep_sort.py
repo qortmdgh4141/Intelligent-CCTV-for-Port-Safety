@@ -127,9 +127,11 @@ class DeepSort(object):
         t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 2, 2)[0]
 
         # 초록색 인식 박스 그려주는 부분
-        if action == 'Hitting something with something' :
+        if action != 'Hitting something with something' :
             ROI_box = img[y1: y2, x1: x2]
-            ROI_box = cv2.add(ROI_box, (25, 12, 0, 0))
+            ROI_box = cv2.add(ROI_box, (55, 110, 145, 0))
+            # 빨간색감
+            #ROI_box = cv2.add(ROI_box, (35, 70, 155, 0))
             img[y1: y2, x1: x2] = ROI_box
         else:
             ROI_box = img[y1: y2, x1: x2]

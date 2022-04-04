@@ -1,39 +1,25 @@
-else:
+# 직사각형 ROI 마우스 이벤트 핸들러 함수, 좌푯값 저장
+def Mouse_Callback_Rect(event, x, y, flags, params):
+    # Press The Left Button
+    global step , start_x, end_x, start_y, end_y, mouse_is_pressing
 
-app = QtWidgets.QApplication(sys.argv)
-win = QtWidgets.QWidget()
-vbox = QtWidgets.QVBoxLayout()
-vbox2 = QtWidgets.QHBoxLayout()
-VideoSignal1 = QtWidgets.QLabel()
-combo_start = QComboBox()
-btn_start = QtWidgets.QPushButton("카메라 켜기")
-btn_stop = QtWidgets.QPushButton("카메라 끄기")
-win.setWindowTitle("감시카메라")
-win.resize(500, 200)
-
-combo_start.addItem("배회영역 설정")
-check = QtWidgets.QPushButton("선택")
-
-btn_start.clicked.connect(start)
-btn_stop.clicked.connect(그만)
-
-
-def connecttion():
-    if combo_start.currentText() == "배회영역 설정":
-        print(combo_start.currentText())
-        global redrectangle_roi_pyqt
-        print("start roi..")
-        redrectangle_roi_pyqt = True
-
-
-check.clicked.connect(connecttion)
-vbox.addWidget(VideoSignal1)
-vbox.addLayout(vbox2)
-
-vbox2.addWidget(btn_start)
-vbox2.addWidget(btn_stop)
-vbox.addWidget(combo_start)
-vbox.addWidget(check)
-win.setLayout(vbox)
-win.show()
-sys.exit(app.exec_())
+    if event == cv2.EVENT_LBUTTONDOWN :
+        step = 1
+        mouse_is_pressing = True
+        start_x = x
+        start_y = y
+    # Moving The Mouse
+    elif event == cv2.EVENT_MOUSEMOVE:
+        # If Pressing The Mouse
+        if mouse_is_pressing:
+            step = 2
+            end_x = x
+            end_y = y
+    # Release The Left Button
+    elif event == cv2.EVENT_LBUTTONUP:
+        step = 3
+        mouse_is_pressing = False
+        end_x = x
+        end_y = y
+    else:
+        print("Error : Mouse_Callback_Rect 함수 예외처리")
