@@ -1,0 +1,18 @@
+name: action
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.7.9
+  - pytorch=1.6.0
+  - torchvision=0.7.0=py37_cpu
+  - pip:
+    - easydict==1.9
+    - gluoncv==0.9.0
+    - matplotlib==3.3.3
+    - mxnet==1.7.0.post1
+    - numpy==1.19.4
+    - opencv-python==4.4.0.46
+    - scikit-learn==0.23.2
+    - tqdm==4.55.0
+    
