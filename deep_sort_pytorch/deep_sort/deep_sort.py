@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import torch
-
+import time
 from .deep.feature_extractor import Extractor
 from .sort.nn_matching import NearestNeighborDistanceMetric
 from .sort.preprocessing import non_max_suppression
@@ -9,7 +9,6 @@ from .sort.detection import Detection
 from .sort.tracker import Tracker
 from gluoncv.model_zoo import get_model
 import mxnet as mx
-
 
 __all__ = ['DeepSort']
 palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
@@ -46,7 +45,7 @@ class DeepSort(object):
         print('%s model is successfully loaded.' % model_name)
 
 
-    def update(self, bbox_xywh, confidences, ori_img):
+    def update(self, bbox_xywh, confidences, ori_img, wander):
 
         self.height, self.width = ori_img.shape[:2]
         # generate detections
@@ -68,6 +67,10 @@ class DeepSort(object):
         # 인원 수 카운트 변수 초기화
         count = 0
 
+        # 측정 시간 체크
+        stime = round(time.time())
+        ids = []
+
         # output bbox identities
         for track in self.tracker.tracks:
             if not track.is_confirmed() or track.time_since_update > 1:
@@ -81,13 +84,43 @@ class DeepSort(object):
             track.update_frames(bbox, ori_img)
             # print(f"INFO: len action_frames: {len(track.frames)}")
 
+            # track id 보관하는 리스트
+            if track.track_id not in ids:
+                ids.append(track.track_id)
+
+            # track_id가 존재하고 wander 딕셔너리에 track_id가 없으면 추가
+            # wander 딕셔너리에 track_id가 없을 경우
+            if track.track_id not in wander:
+                wander[track.track_id] = [stime, 0]
+            # wander 에 track_id가 있을 경우
+            else:
+                # 5초 배회하면 배회중
+                if stime - wander[track.track_id][0] >= 5:
+                    # num = track.track_id
+                    # num = (num)*"  " + str(num) + ","
+                    wander_text = f'Person roaming'
+                    # cv2.putText(ori_img, wander_text, (10, ori_img.shape[0] - 50), cv2.LINE_AA, 0.85, (0, 0, 255), 2)
+                    x11, y11, x22, y22 = [int(i) for i in bbox]
+                    cv2.putText(ori_img, wander_text, (x11, y11 - 5), cv2.FONT_HERSHEY_PLAIN, 2, [255, 255, 0], 2)
+            # ids 에 저장된 track id 수가 tracker의 개수와 같을 때 차집합을 구해 일정 시간이 지나면 wander의 딕셔너리에서 삭제하여 불필요한 데이터 낭비 최소화
+            if len(ids) == len(self.tracker.tracks):
+                dif = set(list(wander.keys())) ^ set(ids)
+                dif = list(dif)
+                print(set(list(wander.keys())) ^ set(ids))
+                for i in range(len(dif)):
+                    wander[dif[i]][1] += 1
+                    if wander[dif[i]][1] >= 10:
+                        del wander[dif[i]]
+
             # action 인식하고 출력하는 부분
-            # action = track.get_action(self.net)
-            action = 'Hitting something with something'
+            action = track.get_action(self.net)
+            #action = 'Hitting something with something'
             print(f"INFO: action {action}")
             count += 1
 
             self.draw_boxes(ori_img, bbox, track.track_id, action)
+
+            self.draw_boxes_v2(ori_img, bbox, track.track_id)
 
         # 인원 수 count
         counting_text = "People Counting : {}".format(count)
@@ -107,6 +140,9 @@ class DeepSort(object):
     Thanks JieChen91@github.com for reporting this bug!
     """
 
+    @staticmethod
+    def draw_boxes_v2(ori_img, bbox, track_id):
+        print("a")
 
     @staticmethod
     def draw_boxes(img, bbox, identities=None, action=None, offset=(0, 0)):
@@ -125,6 +161,7 @@ class DeepSort(object):
         else:
             label = '{}{:d}'.format("", id)
         t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 2, 2)[0]
+
 
         # 초록색 인식 박스 그려주는 부분
         if action != 'Hitting something with something' :
