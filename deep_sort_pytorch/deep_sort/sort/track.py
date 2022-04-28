@@ -106,7 +106,7 @@ class Track:
         self.frames.append(frame)
 
 
-    def get_action(self, net):
+    def get_action(self, net, action_mode="fight"):
         if len(self.frames) < self.SAMPLE_DURATION:
             return None
 
@@ -129,7 +129,7 @@ class Track:
 
         # topk로 라벨 분류 최종 갯수 선택 가능
         classes = net.classes
-        topK = 2
+        topK = 3
         ind = nd.topk(pred, k=topK)[0].astype('int')
 
         # 라벨 종류 출력
@@ -139,17 +139,25 @@ class Track:
                   (classes[ind[i].asscalar()], nd.softmax(pred)[0][ind[i]].asscalar()))
         print("-----------------------------------------------------------------------------------------")
 
-        num = ind[0].asscalar()
+        #num = ind[0].asscalar()
 
-        # 확률 35% 이상일 시 확률 출력 및 실행
-        if round(nd.softmax(pred)[0][ind[0]].asscalar(), 3) >= 0.45:
-            print(f'{round(nd.softmax(pred)[0][ind[0]].asscalar(), 2)}')
+        # f_list = ["Hitting", "Wiping", "Spinning", "Throwing", "Pulling", "Putting"]
+        f_list = ["Hitting", "Throwing"]
+        f2_list = ['hand on head', 'Get down', 'clap' ]
 
-            return classes[num]
+        if action_mode == "fight":
+            for i in range(topK):
+                if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.4:
+                    #if classes[ind[i].asscalar()] in f_list:
+                    if classes[ind[i].asscalar()] in f_list:
+                        return "Warning Action"
 
-        else:
-            return None
-
+        elif action_mode == "control":
+            for i in range(topK):
+                if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.2:
+                    #if classes[ind[i].asscalar()] in f_list
+                    if classes[ind[i].asscalar()] in f2_list:
+                        return classes[ind[i].asscalar()]
 
     def to_tlwh(self):
         """Get current position in bounding box format `(top left x, top left y,

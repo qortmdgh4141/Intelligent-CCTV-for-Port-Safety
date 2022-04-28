@@ -1,25 +1,32 @@
-# 직사각형 ROI 마우스 이벤트 핸들러 함수, 좌푯값 저장
-def Mouse_Callback_Rect(event, x, y, flags, params):
-    # Press The Left Button
-    global step , start_x, end_x, start_y, end_y, mouse_is_pressing
+def mode_fight():
+    global action_mode
+    action_mode = "fight"
+def mode_control():
+    global action_mode
+    action_mode = "control"
+def mode_disable():
+    global action_mode
+    action_mode = "disable"
 
-    if event == cv2.EVENT_LBUTTONDOWN :
-        step = 1
-        mouse_is_pressing = True
-        start_x = x
-        start_y = y
-    # Moving The Mouse
-    elif event == cv2.EVENT_MOUSEMOVE:
-        # If Pressing The Mouse
-        if mouse_is_pressing:
-            step = 2
-            end_x = x
-            end_y = y
-    # Release The Left Button
-    elif event == cv2.EVENT_LBUTTONUP:
-        step = 3
-        mouse_is_pressing = False
-        end_x = x
-        end_y = y
+    # action 인식하고 출력하는 부분
+    if action_mode == "disable":
+        action = None
+    elif action_mode == "fight":
+        action = track.get_action(self.net)
+    elif action_mode == "control":
+        action = track.get_action(self.net)
     else:
-        print("Error : Mouse_Callback_Rect 함수 예외처리")
+        print("action 오류")
+
+
+
+# Fighting Mode 모델
+        model_name = 'i3d_resnet50_v1_sthsthv2'
+        # 명령 Mode 모델
+        # model_name = 'i3d_resnet50_v1_hmdb51'
+
+        self.net = get_model(model_name, pretrained=True)
+
+        with mx.Context('gpu', 0):  # Context changed in `with` block.
+            self.net.collect_params().reset_ctx(ctx=mx.current_context())
+            # self.net.initialize(force_reinit=True, ctx=mx.current_context())

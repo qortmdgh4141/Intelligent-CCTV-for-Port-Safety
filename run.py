@@ -44,6 +44,9 @@ mouse_is_pressing, step = False, 0
 start_x, start_y, end_x, end_y = 0,0,0,0
 polygon_xy_list = []
 
+# 행동 인식 딥러닝 모델 선택
+action_mode = "disable"
+
 # 직사각형 ROI 마우스 이벤트 핸들러 함수, 좌푯값 저장
 def Mouse_Callback_Rect(event, x, y, flags, params):
     # Press The Left Button
@@ -160,6 +163,7 @@ def detect(opt, save_img=False):
     global start_x, start_y, end_x, end_y, polygon_xy_list
     global step, mouse_is_pressing
     global Choose_pyqt_Rect, Choose_pyqt_Polygon
+    global action_mode
 
 
     # pyqt start 버튼 누르면 다시 실행 될 수 있도록 True 설정
@@ -180,8 +184,13 @@ def detect(opt, save_img=False):
                         max_age=cfg.DEEPSORT.MAX_AGE, n_init=cfg.DEEPSORT.N_INIT, nn_budget=cfg.DEEPSORT.NN_BUDGET,
                         use_cuda=True)
 
+
+
     # 배회 침입 데이터 딕셔너리
     wander = {}
+    # Warning->Fighting 라벨 변환 큐 리스트 & Fighting 유지시간 저장 리스트
+    fw_queue = []
+    fight_time = [False,0]
 
     # Initialize
     device = select_device(opt.device)
@@ -226,6 +235,9 @@ def detect(opt, save_img=False):
     txt_path = str(Path(out)) + '/results.txt'
 
     vid = cv2.VideoCapture(source)
+    # 실시간 영상저장
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    writer = cv2.VideoWriter('output.avi', fourcc, 6.0, (640, 480))
 
     filename = os.path.basename(source).split('.')[0]
     save_path = f"inference/output/{filename}_action.mp4"
@@ -262,14 +274,57 @@ def detect(opt, save_img=False):
                 if (roi_mode_on == True) and (mouse_is_pressing==False) :
                     end_y = end_y - ((end_y - start_y) % 32)
                     end_x = end_x - ((end_x - start_x) % 32)
+                    if Choose_pyqt_Rect == True:
+                        # 실제, 직사각형 ROI 영역 지정
+                        img = img[:, :, start_y: end_y, start_x: end_x]
+                        print(f"직사각형 ROI 영역 좌푯값 == start_x : {start_x}, start_y : {start_y}, end_x : {end_x}, end_y : {end_y}")
 
-                    # 실제, 직사각형 ROI 영역 지정 ㅎㅎ
-                    img = img[:, :, start_y: end_y, start_x: end_x]
-                    print(f"직사각형 ROI 영역 좌푯값 == start_x : {start_x}, start_y : {start_y}, end_x : {end_x}, end_y : {end_y}")
+
+                    else:
+                        # 실제, 폴리곤 ROI 영역 지정
+                        img = img[:, :, start_y: end_y, start_x: end_x]
+
+                        '''
+                        # 호호수정
+
+                        img = img.reshape(480, 640, 3)
+                        #mask_img = np.zeros(img.shape, np.uint8)
+                        mask_img = img.copy()
+
+                        mask_img = cv2.fillPoly(mask_img, [np_xy], (0, 0, 0))
+                        img = cv2.bitwise_xor(img, mask_img)
+
+
+                        #black_img = np.zeros(img.shape, np.uint8)
+                        #cv2.bitwise_and(img, mask_img, black_img)
+                        img = img.reshape(1, 3, 480, 640)
+                        # 호호수정
+                        '''
+                        print(
+                            f"폴리곤 ROI 영역 좌푯값 == start_x : {start_x}, start_y : {start_y}, end_x : {end_x}, end_y : {end_y}")
             else:
                 print("PYQT 메시지 박스 '직사각형' 과 '폴리곤' 중 선택 하세요")
 
+        # 호호 수정
+        '''
+        polygon_xy_list = [[0, 0], [0, 380], [320, 380], [320,0]]
+        np_xy = np.array(polygon_xy_list)
 
+        img = img.reshape(384, 640, 3)
+        #mask_img = np.zeros(img.shape, np.uint8)
+        mask_img = img.copy()
+
+        mask_img = cv2.fillPoly(mask_img, [np_xy], (0, 0, 0))
+        img = cv2.bitwise_xor(img, mask_img)
+
+        # black_img = np.zeros(img.shape, np.uint8)
+        # cv2.bitwise_and(img, mask_img, black_img)
+        img = img.reshape(1, 3, 384, 640)
+        print(f"gkgkkgk  {img.shape}")
+        # 호호 수정
+        '''
+
+        print(f'0번째 -->  {img.shape}')
         img = torch.from_numpy(img).to(device)
         #print(f'0번째 -->  {img.shape}')
         img = img.half() if half else img.float()  # uint8 to fp16/32
@@ -332,7 +387,8 @@ def detect(opt, save_img=False):
                 confss = torch.Tensor(confs)
 
                 # Pass detections to deepsort
-                im0 = deepsort.update(xywhs, confss, im0, wander)
+                im0 = deepsort.update(xywhs, confss, im0, wander, fw_queue, fight_time, action_mode)
+
 
                 # # draw boxes for visualization
                 # if len(outputs) > 0:
@@ -417,11 +473,9 @@ def detect(opt, save_img=False):
 
                             # 테스트 박스
                             pp_x, pp_y, pp_w, pp_h = cv2.boundingRect(np_xy)
-                            cv2.rectangle(im0, (pp_x, pp_y), ((pp_w + p_x), (pp_h + p_y)), (255, 0, 255), 3)
+                            #cv2.rectangle(im0, (pp_x, pp_y), ((pp_w + p_x), (pp_h + p_y)), (255, 0, 255), 3)
 
-
-
-
+                writer.write(im0)
                 # 파이큐티 화면 출력 VideoSignal1
                 im0 = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
                 h, w, c = im0.shape
@@ -445,6 +499,7 @@ def detect(opt, save_img=False):
         pipe.stdin.close()
         pipe.wait()
         pbar.close()
+    writer.release()
 
     print('Done. (%.3fs)' % (time.time() - t0))
 
@@ -493,24 +548,36 @@ def onExit():
 
 def connecttion():
     global Choose_pyqt_Rect, Choose_pyqt_Polygon
-    if combo_start.currentText() == "Rect":
+    if radio_rectangle.isChecked():
         Choose_pyqt_Rect = True
         Choose_pyqt_Polygon = False
-        print(combo_start.currentText())
+
         print("You choose Rect_Mode ..")
-    elif combo_start.currentText() == "Polygon":
+    elif radio_polygon.isChecked():
         Choose_pyqt_Rect = False
         Choose_pyqt_Polygon = True
-        print(combo_start.currentText())
+
         print("You choose Polygon_Mode ..")
-    elif combo_start.currentText() == "ROI Mode Setting":
+    else :
         Choose_pyqt_Rect = False
         Choose_pyqt_Polygon = False
         print("Please select ROI Mode")
 
+def mode_fight():
+    global action_mode
+    action_mode = "fight"
+def mode_control():
+    global action_mode
+    action_mode = "control"
+def mode_disable():
+    global action_mode
+    action_mode = "disable"
 
 #  웹캠 또는 영상으로 지정하는 변수 파이큐티 사용 하기위해
 device = '0'
+#device = 'inference/test1.mp4'
+#device = 'inference/ped_Trim.mp4'
+#device = 'inference/ped.mp4'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -554,67 +621,101 @@ if __name__ == '__main__':
         detect(args)
 
     # PTQT 디자인 및 위젯 생성
-    else :
+    else:
 
         app = QtWidgets.QApplication(sys.argv)
         win = QtWidgets.QWidget()
-        vbox = QtWidgets.QVBoxLayout()
-        vbox2 = QtWidgets.QHBoxLayout()
-        vbox3 = QtWidgets.QHBoxLayout()
-        VideoSignal1 = QtWidgets.QLabel()
-        combo_start = QComboBox()
-        btn_start = QtWidgets.QPushButton("Camera On")
-        btn_stop = QtWidgets.QPushButton("Camera Off")
+        vbox = QtWidgets.QHBoxLayout()
+        vbox2 = QtWidgets.QVBoxLayout()
+        vbox3 = QtWidgets.QVBoxLayout()
+        vbox4 = QtWidgets.QVBoxLayout()
+        vbox5 = QtWidgets.QVBoxLayout()
+        vbox6 = QtWidgets.QVBoxLayout()
+
+        gbox = QtWidgets.QGroupBox()
+        gbox.setTitle("Camera")
+        gbox2 = QtWidgets.QGroupBox()
+        gbox2.setTitle("ROI")
+        gbox3 = QtWidgets.QGroupBox()
+        gbox3.setTitle("ROI Mode Select")
+        gbox4 = QtWidgets.QGroupBox()
+        gbox4.setTitle("Action Detection")
+
+        btn_start = QtWidgets.QPushButton("Camera on")
+        btn_stop = QtWidgets.QPushButton("Camera off")
         btn_roi_on = QtWidgets.QPushButton("ROI 활성화")
         btn_roi_off = QtWidgets.QPushButton("ROI 비활성화")
-        win.setWindowTitle("Prison Artificial Intelligent CCTV")
-        win.resize(500,200)
+        radio_polygon = QtWidgets.QRadioButton("Polygon")
+        radio_rectangle = QtWidgets.QRadioButton("Rectangle")
+        btn_fight = QtWidgets.QPushButton("Fight detection mode")
+        btn_control = QtWidgets.QPushButton("Control detection mode")
+        btn_disable = QtWidgets.QPushButton("Disable all detections")
 
-        combo_start.addItem("ROI Mode Setting")
-        combo_start.addItem("Rect")
-        combo_start.addItem("Polygon")
-        check = QtWidgets.QPushButton("선택")
+        vbox3.addWidget(btn_start)
+        vbox3.addWidget(btn_stop)
+        vbox4.addWidget(btn_roi_on)
+        vbox4.addWidget(btn_roi_off)
+        vbox5.addWidget(radio_polygon)
+        vbox5.addWidget(radio_rectangle)
+        vbox6.addWidget(btn_fight)
+        vbox6.addWidget(btn_control)
+        vbox6.addWidget(btn_disable)
+
+        gbox.setLayout(vbox3)
+        gbox2.setLayout(vbox4)
+        gbox3.setLayout(vbox5)
+        gbox4.setLayout(vbox6)
+
+        vbox2.addWidget(gbox)
+        vbox2.addWidget(gbox2)
+        vbox2.addWidget(gbox3)
+        vbox2.addWidget(gbox4)
+
+        win.setStyleSheet(
+            "background-color: rgb(34, 32, 41)"
+        )
+        gbox.setStyleSheet(
+            "color: white;"
+            "background-color: rgb(47, 42, 53)"
+        )
+        gbox2.setStyleSheet(
+            "color: white;"
+            "background-color: rgb(47, 42, 53)"
+        )
+        gbox3.setStyleSheet(
+            "color: white;"
+            "background-color: rgb(47, 42, 53)"
+        )
+        gbox4.setStyleSheet(
+            "color: white;"
+            "background-color: rgb(47, 42, 53)"
+        )
+
+        VideoSignal1 = QtWidgets.QLabel()
+
+        win.setWindowTitle("Prison Artificial Intelligent CCTV")
+        win.resize(500, 200)
 
         btn_start.clicked.connect(start)
         btn_stop.clicked.connect(stop)
+
         btn_roi_on.clicked.connect(roi_on)
         btn_roi_off.clicked.connect(roi_off)
 
+        radio_polygon.clicked.connect(connecttion)
+        radio_rectangle.clicked.connect(connecttion)
 
-        check.clicked.connect(connecttion)
+
+        btn_fight.clicked.connect(mode_fight)
+        btn_control.clicked.connect(mode_control)
+        btn_disable.clicked.connect(mode_disable)
+
+        # check.clicked.connect(connecttion)
+
         vbox.addWidget(VideoSignal1)
         vbox.addLayout(vbox2)
-        vbox.addLayout(vbox3)
 
-        vbox2.addWidget(btn_start)
-        vbox2.addWidget(btn_stop)
-        vbox3.addWidget(btn_roi_on)
-        vbox3.addWidget(btn_roi_off)
-        vbox.addWidget(combo_start)
-        vbox.addWidget(check)
         win.setLayout(vbox)
         win.show()
         sys.exit(app.exec_())
-
-    '''
-    app = QtWidgets.QApplication(sys.argv)
-    win = QtWidgets.QWidget()
-    vbox = QtWidgets.QVBoxLayout()
-    VideoSignal1 = QtWidgets.QLabel()
-    btn_start = QtWidgets.QPushButton("카메라 켜기")
-    btn_stop = QtWidgets.QPushButton("카메라 끄기")
-    red_roi = QtWidgets.QPushButton("배회영역 설정")
-    vbox.addWidget(VideoSignal1)
-    vbox.addWidget(btn_start)
-    vbox.addWidget(btn_stop)
-    vbox.addWidget(red_roi)
-    win.setLayout(vbox)
-    win.show()
-    btn_start.clicked.connect(start)
-    btn_stop.clicked.connect(stop)
-    red_roi.clicked.connect(roi)
-    app.aboutToQuit.connect(onExit)
-    sys.exit(app.exec_())
-    '''
-
 

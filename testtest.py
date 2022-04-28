@@ -1,30 +1,17 @@
-import cv2
-step = 0
-polygon_list = [[]]
-def Mouse_Callback_Polygon(event, x, y, flags, params):
-    # Press The Left Button
-    global step, polygon_list
-
-    if event == cv2.EVENT_LBUTTONDOWN :
-        step = 100
-        polygon_list.append([x,y])
-        #mouse_is_pressing = True
+if action_mode == "disable":
+    action = None
+elif action_mode == "fight":
+    action = track.get_action(self.net, action_mode)
+elif action_mode == "control":
+    action = track.get_action(self.net2, action_mode)
+else:
+    print("action 오류")
 
 
-cap = cv2.VideoCapture(0)
+# 명령 모드 리스트 박스
+        control_list = ['hand on head', 'Get down', 'clap']
 
-while(True):
-    print(polygon_list)
-    ret, frame = cap.read()    # Read 결과와 frame
-    cv2.namedWindow("Color")
-    a = cv2.setMouseCallback("Color", Mouse_Callback_Polygon)
-    print(a)
 
-    cv2.imshow("Color", frame)
-    key = cv2.waitKey(1)
 
-    # esc 누를경우, ROI 직사각형 좌표 설정 종료 및 RoI Mode 활성화
-    if key == 27:
-        polygon_list.clear()
-        print(polygon_list)
-        #cv2.destroyWindow("Color")
+ROI_box = cv2.add(ROI_box, (160, 110, 50, 0)) 파랑색
+ROI_box = cv2.add(ROI_box, (255, 51, 153, 0)) 보라색
