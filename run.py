@@ -1,8 +1,10 @@
 import sys
 
+import pymysql
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QLabel, QPushButton, QWidget, QApplication, QComboBox
 
 sys.path.insert(0, './yolov5')
@@ -26,6 +28,7 @@ from tqdm import tqdm
 import numpy as np
 import os
 
+import itertools
 # PYQT 카메라 ON,OFF 버튼 선택
 running = True
 
@@ -46,6 +49,64 @@ polygon_xy_list = []
 
 # 행동 인식 딥러닝 모델 선택
 action_mode = "disable"
+
+# 객체별 거리 측정 함수
+def distancing(people_coords, img, dist_thres_lim=(200,250)):
+    # Plot lines connecting people
+    already_red = dict() # dictionary to store if a plotted rectangle has already been labelled as high risk
+    centers = []
+    for i in people_coords:
+        centers.append(((int(i[2])+int(i[0]))//2,(int(i[3])+int(i[1]))//2))
+    for j in centers:
+        already_red[j] = 0
+    x_combs = list(itertools.combinations(people_coords,2))
+    radius = 10
+    thickness = 5
+    for x in x_combs:
+        xyxy1, xyxy2 = x[0],x[1]
+        cntr1 = ((int(xyxy1[2])+int(xyxy1[0]))//2,(int(xyxy1[3])+int(xyxy1[1]))//2)
+        cntr2 = ((int(xyxy2[2])+int(xyxy2[0]))//2,(int(xyxy2[3])+int(xyxy2[1]))//2)
+        dist = ((cntr2[0]-cntr1[0])**2 + (cntr2[1]-cntr1[1])**2)**0.5
+
+        if dist > dist_thres_lim[0] and dist < dist_thres_lim[1]:
+            color = (0, 255, 255)
+            label = "Low Risk "
+            cv2.line(img, cntr1, cntr2, color, thickness)
+            if already_red[cntr1] == 0:
+                cv2.circle(img, cntr1, radius, color, -1)
+            if already_red[cntr2] == 0:
+                cv2.circle(img, cntr2, radius, color, -1)
+            # Plots one bounding box on image img
+            tl = round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
+            for xy in x:
+                cntr = ((int(xy[2])+int(xy[0]))//2,(int(xy[3])+int(xy[1]))//2)
+                if already_red[cntr] == 0:
+                    c1, c2 = (int(xy[0]), int(xy[1])), (int(xy[2]), int(xy[3]))
+                    tf = max(tl - 1, 1)  # font thickness
+                    t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+                    c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+                    cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
+                    cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
+                    cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+        elif dist < dist_thres_lim[0]:
+            color = (0, 0, 255)
+            label = "High Risk"
+            already_red[cntr1] = 1
+            already_red[cntr2] = 1
+            cv2.line(img, cntr1, cntr2, color, thickness)
+            cv2.circle(img, cntr1, radius, color, -1)
+            cv2.circle(img, cntr2, radius, color, -1)
+            # Plots one bounding box on image img
+            tl = round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
+            for xy in x:
+                c1, c2 = (int(xy[0]), int(xy[1])), (int(xy[2]), int(xy[3]))
+                tf = max(tl - 1, 1)  # font thickness
+                t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+                c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+                cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
+                cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
+                cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf,
+                            lineType=cv2.LINE_AA)
 
 # 직사각형 ROI 마우스 이벤트 핸들러 함수, 좌푯값 저장
 def Mouse_Callback_Rect(event, x, y, flags, params):
@@ -188,9 +249,10 @@ def detect(opt, save_img=False):
 
     # 배회 침입 데이터 딕셔너리
     wander = {}
-    # Warning->Fighting 라벨 변환 큐 리스트 & Fighting 유지시간 저장 리스트
+    # Warning->Fighting 라벨 변환 큐 리스트 & Fighting 유지시간 저장 리스트 & 명령모드 유지시간 저장 딕셔너리
     fw_queue = []
     fight_time = [False,0]
+    control_time = {}
 
     # Initialize
     device = select_device(opt.device)
@@ -345,7 +407,7 @@ def detect(opt, save_img=False):
             pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
         t2 = time_synchronized()
 
-
+        people_coords = []
         # Process detections
         for i, det in enumerate(pred):  # detections per image
             if webcam:  # batch_size >= 1
@@ -383,11 +445,33 @@ def detect(opt, save_img=False):
                     bbox_xywh.append(obj)
                     confs.append([conf.item()])
 
+                    people_coords.append(xyxy)
                 xywhs = torch.Tensor(bbox_xywh)
                 confss = torch.Tensor(confs)
 
+                # dist_thres_lim=(200, 250) 디폴트 값
+                # 객체별 거리 측정 후 선을 이어줌
+                distancing(people_coords, im0)
+
                 # Pass detections to deepsort
-                im0 = deepsort.update(xywhs, confss, im0, wander, fw_queue, fight_time, action_mode)
+                im0 = deepsort.update(xywhs, confss, im0, wander, fw_queue, fight_time, control_time,action_mode)
+
+                # db연결
+                conn = pymysql.connect(host="localhost", user="root", password="123456789", db="cctv_db",
+                                       charset="utf8")
+                curs = conn.cursor()
+                sql = "select action,time from time"
+                curs.execute(sql)
+                rows = curs.fetchall()
+                # db박스 초기화 후 데이터 마다 색상 변경
+                widg.clear()
+                for i in range(0, len(rows), 6):
+                    if (str(rows[i][0]) == 'danger'):
+                        widg.setTextColor(QColor(255, 51, 0))
+                        widg.append(str(rows[i]))
+                    else:
+                        widg.setTextColor(QColor(255, 127, 0))
+                        widg.append(str(rows[i]))
 
 
                 # # draw boxes for visualization
@@ -631,6 +715,8 @@ if __name__ == '__main__':
         vbox4 = QtWidgets.QVBoxLayout()
         vbox5 = QtWidgets.QVBoxLayout()
         vbox6 = QtWidgets.QVBoxLayout()
+        vbox7 = QtWidgets.QVBoxLayout()
+        widg = QtWidgets.QTextEdit()
 
         gbox = QtWidgets.QGroupBox()
         gbox.setTitle("Camera")
@@ -640,6 +726,8 @@ if __name__ == '__main__':
         gbox3.setTitle("ROI Mode Select")
         gbox4 = QtWidgets.QGroupBox()
         gbox4.setTitle("Action Detection")
+        gbox5 = QtWidgets.QGroupBox()
+        gbox5.setTitle("Notice")
 
         btn_start = QtWidgets.QPushButton("Camera on")
         btn_stop = QtWidgets.QPushButton("Camera off")
@@ -660,16 +748,19 @@ if __name__ == '__main__':
         vbox6.addWidget(btn_fight)
         vbox6.addWidget(btn_control)
         vbox6.addWidget(btn_disable)
+        vbox7.addWidget(widg)
 
         gbox.setLayout(vbox3)
         gbox2.setLayout(vbox4)
         gbox3.setLayout(vbox5)
         gbox4.setLayout(vbox6)
+        gbox5.setLayout(vbox7)
 
         vbox2.addWidget(gbox)
         vbox2.addWidget(gbox2)
         vbox2.addWidget(gbox3)
         vbox2.addWidget(gbox4)
+        vbox2.addWidget(gbox5)
 
         win.setStyleSheet(
             "background-color: rgb(34, 32, 41)"
@@ -687,6 +778,10 @@ if __name__ == '__main__':
             "background-color: rgb(47, 42, 53)"
         )
         gbox4.setStyleSheet(
+            "color: white;"
+            "background-color: rgb(47, 42, 53)"
+        )
+        gbox5.setStyleSheet(
             "color: white;"
             "background-color: rgb(47, 42, 53)"
         )

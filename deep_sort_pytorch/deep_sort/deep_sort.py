@@ -52,7 +52,7 @@ class DeepSort(object):
         print('%s model is successfully loaded.' % model_name)
 
 
-    def update(self, bbox_xywh, confidences, ori_img, wander, fw_queue, fight_time, action_mode):
+    def update(self, bbox_xywh, confidences, ori_img, wander, fw_queue, fight_time, control_time, action_mode):
 
         self.height, self.width = ori_img.shape[:2]
         # generate detections
@@ -155,38 +155,63 @@ class DeepSort(object):
             else:
                 fw_queue.append(0)
 
-            fw_score = 0
-            for i in range(len(fw_queue)):
-                fw_score =  fw_score + fw_queue[i]
-            if (fw_score >= 45) :
-                if (fight_time[0] == False):
-                    fight_time.clear()
-                    fight_time.append(True)
-                    fight_time.append(round(time.time()))
+            if action_mode == "fight":
+                fw_score = 0
+                for i in range(len(fw_queue)):
+                    fw_score =  fw_score + fw_queue[i]
+                if (fw_score >= 45) :
+                    if (fight_time[0] == False):
+                        fight_time.clear()
+                        fight_time.append(True)
+                        fight_time.append(round(time.time()))
 
-                # DB 기록 danger 상황, 시간 기록
-                if ((round(time.time()) % 7) == 0):
+                    action = 'Dangerous Action'
+
+                    # DB 기록 Dangerous 상황, 시간 기록
+                    #if ((round(time.time()) % 2) == 0):
                     sql = """insert into time(action, time)
                                                                 values(%s, now())"""
                     curs.execute(sql, ('danger'))
                     conn.commit()
 
-                action = 'Dangerous Action'
+                # Dangerous 상황일 시 빨간색 박스 5초간 지속
+                elif fight_time[0] == True:
+                    tm_minus = round(time.time())-fight_time[1]
+                    if tm_minus > 5:
+                        fight_time.clear()
+                        fight_time.append(False)
+                        fight_time.append(0)
+                    else:
+                        action = 'Dangerous Action'
+                        # DB 기록 Dangerous 상황, 시간 기록
+                        if ((round(time.time()) % 2) == 0):
+                            sql = """insert into time(action, time)
+                                                                                           values(%s, now())"""
+                            curs.execute(sql, ('danger'))
+                            conn.commit()
 
-            elif fight_time[0] == True:
-                tm_minus = round(time.time())-fight_time[1]
-                if tm_minus > 5:
-                    fight_time.clear()
-                    fight_time.append(False)
-                    fight_time.append(0)
-                else:
-                    action = 'Dangerous Action'
+            # Controlled 상황일 시 파란색 박스 3초간 지속
+            elif action_mode == "control":
+                # 명령 모드 리스트 박스
+                control_list = ['hand on head', 'Get down', 'clap']
+                # key 값은 id, Value값은 시간
+                id = int(track.track_id)
+                if action in control_list:
+                    action = 'Controlled action'
+                    control_time[id] = round(time.time())
+                elif action not in control_list:
+                    if id in control_time:
+                        if (round(time.time()) - control_time[id]) < 3:
+                            action = 'Controlled action'
+                        else:
+                            del (control_time[id])
+                    else:
+                        action = 'Uncontrolled action'
 
             print(f"INFO: action {action}")
             count += 1
 
             self.draw_boxes(ori_img, bbox, track.track_id, action, action_mode=action_mode)
-
 
         # 인원 수 count
         counting_text = "People Counting : {}".format(count)
@@ -201,11 +226,10 @@ class DeepSort(object):
         return ori_img
 
     """
-    TODO:
-        Convert bbox from xc_yc_w_h to xtl_ytl_w_h
-    Thanks JieChen91@github.com for reporting this bug!
-    """
-
+      TODO:
+          Convert bbox from xc_yc_w_h to xtl_ytl_w_h
+      Thanks JieChen91@github.com for reporting this bug!
+      """
     @staticmethod
     def draw_boxes(img, bbox, identities=None, action=None, offset=(0, 0), action_mode="disable"):
 
@@ -233,9 +257,6 @@ class DeepSort(object):
         elif textsize <= 1:
             textsize = 1
 
-        # 명령 모드 리스트 박스
-        control_list = ['hand on head', 'Get down', 'clap']
-
         # 초록색,주황색,빨간색 인식 박스 그려주는 부분
         # 싸움 인식 모드
         if action_mode == "fight":
@@ -259,23 +280,25 @@ class DeepSort(object):
                                          t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [0, 255, 0], 2)
         # 명령 모드
         elif action_mode == "control":
-            if action in control_list :
+            if action == 'Controlled action' :
                 ROI_box = img[y1: y2, x1: x2]
                 ROI_box = cv2.add(ROI_box, (160, 110, 50, 0))
                 img[y1: y2, x1: x2] = ROI_box
                 cv2.putText(img, label, (x1, y1 +
-                                         t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [0, 127, 255], 2)
-            else :
+                                         t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [255, 0, 0], 2)
+            elif action == 'Uncontrolled action':
                 ROI_box = img[y1: y2, x1: x2]
                 ROI_box = cv2.add(ROI_box, (255, 51, 153, 0))
                 img[y1: y2, x1: x2] = ROI_box
                 cv2.putText(img, label, (x1, y1 +
                                          t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [0, 0, 255], 2)
+
         # 모드 선택 안함
         elif action_mode == "disable" :
             ROI_box = img[y1: y2, x1: x2]
             ROI_box = cv2.add(ROI_box, (10, 40, 10, 0))
             img[y1: y2, x1: x2] = ROI_box
+
             cv2.putText(img, label, (x1, y1 +
                                      t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [0, 255, 0], 2)
 
