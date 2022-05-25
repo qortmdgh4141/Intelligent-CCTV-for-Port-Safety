@@ -1,13 +1,10 @@
+from Realtime import Realime_graph
+from PyQt5.QtCore import QTimer
 import sys
-
 import pymysql
-from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QLabel, QPushButton, QWidget, QApplication, QComboBox
-
-sys.path.insert(0, './yolov5')
 from subprocess import Popen, PIPE
 from PIL import Image
 from yolov5.utils.datasets import LoadImages, LoadStreams
@@ -16,8 +13,6 @@ from yolov5.utils.torch_utils import select_device, time_synchronized
 from deep_sort_pytorch.utils.parser import get_config
 from deep_sort_pytorch.deep_sort import DeepSort
 import argparse
-import os
-import platform
 import shutil
 import time
 from pathlib import Path
@@ -27,8 +22,16 @@ import torch.backends.cudnn as cudnn
 from tqdm import tqdm
 import numpy as np
 import os
-
 import itertools
+
+sys.path.insert(0, './yolov5')
+
+# 실시간 그래프 deepsort 코드에서 인원수 가져오는 리스트
+count_graph = []
+
+# Warning->Fighting 라벨 변환 큐 리스트
+fw_queue = []
+
 # PYQT 카메라 ON,OFF 버튼 선택
 running = True
 
@@ -39,10 +42,10 @@ redpolygon_roi_pyqt = False
 Choose_pyqt_Rect = False
 Choose_pyqt_Polygon = False
 
-#Color 윈도우창 ESC버튼 누른 순간 ROI 모드 활성화
+# ROI Settings 윈도우창 ESC버튼 누른 순간 ROI 모드 활성화
 roi_mode_on = False
 
-# 마우스 상태 및 직사각형 ROI 좌표 초기화,
+# 마우스 상태 및 직사각형 ROI 좌표, 폴리곤 좌표 리스트 초기화
 mouse_is_pressing, step = False, 0
 start_x, start_y, end_x, end_y = 0,0,0,0
 polygon_xy_list = []
@@ -50,23 +53,34 @@ polygon_xy_list = []
 # 행동 인식 딥러닝 모델 선택
 action_mode = "disable"
 
+# 거리 모드 초기화
+distance_mode = False
+
+# PYQT 그래프에 나타낼 거리에 따른 "low risk, high risk" 리스트
+distance_graph = []
+
+
 # 객체별 거리 측정 함수
-def distancing(people_coords, img, dist_thres_lim=(200,250)):
+# dist_thres_lim=(200,250)
+def distancing(people_coords, img, dist_thres_lim=(400,1500)):
+    global distance_graph
+    distance_high_count = 0
+    distance_low_count = 0
     # Plot lines connecting people
     already_red = dict() # dictionary to store if a plotted rectangle has already been labelled as high risk
     centers = []
     for i in people_coords:
-        centers.append(((int(i[2])+int(i[0]))//2,(int(i[3])+int(i[1]))//2))
+        centers.append(((int(i[2]) + int(i[0])) // 2, (int(i[3]) + int(i[1])) // 2))
     for j in centers:
         already_red[j] = 0
-    x_combs = list(itertools.combinations(people_coords,2))
+    x_combs = list(itertools.combinations(people_coords, 2))
     radius = 10
     thickness = 5
     for x in x_combs:
-        xyxy1, xyxy2 = x[0],x[1]
-        cntr1 = ((int(xyxy1[2])+int(xyxy1[0]))//2,(int(xyxy1[3])+int(xyxy1[1]))//2)
-        cntr2 = ((int(xyxy2[2])+int(xyxy2[0]))//2,(int(xyxy2[3])+int(xyxy2[1]))//2)
-        dist = ((cntr2[0]-cntr1[0])**2 + (cntr2[1]-cntr1[1])**2)**0.5
+        xyxy1, xyxy2 = x[0], x[1]
+        cntr1 = ((int(xyxy1[2]) + int(xyxy1[0])) // 2, (int(xyxy1[3]) + int(xyxy1[1])) // 2)
+        cntr2 = ((int(xyxy2[2]) + int(xyxy2[0])) // 2, (int(xyxy2[3]) + int(xyxy2[1])) // 2)
+        dist = ((cntr2[0] - cntr1[0]) ** 2 + (cntr2[1] - cntr1[1]) ** 2) ** 0.5
 
         if dist > dist_thres_lim[0] and dist < dist_thres_lim[1]:
             color = (0, 255, 255)
@@ -79,15 +93,16 @@ def distancing(people_coords, img, dist_thres_lim=(200,250)):
             # Plots one bounding box on image img
             tl = round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
             for xy in x:
-                cntr = ((int(xy[2])+int(xy[0]))//2,(int(xy[3])+int(xy[1]))//2)
+                cntr = ((int(xy[2]) + int(xy[0])) // 2, (int(xy[3]) + int(xy[1])) // 2)
                 if already_red[cntr] == 0:
                     c1, c2 = (int(xy[0]), int(xy[1])), (int(xy[2]), int(xy[3]))
                     tf = max(tl - 1, 1)  # font thickness
                     t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
                     c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
-                    cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
-                    cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
-                    cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+
+            # low risk 갯수 추가
+            distance_low_count += 1
+
         elif dist < dist_thres_lim[0]:
             color = (0, 0, 255)
             label = "High Risk"
@@ -103,16 +118,20 @@ def distancing(people_coords, img, dist_thres_lim=(200,250)):
                 tf = max(tl - 1, 1)  # font thickness
                 t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
                 c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
-                cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
-                cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
-                cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf,
-                            lineType=cv2.LINE_AA)
+
+            # high risk 갯수 추가
+            distance_high_count += 1
+
+        # PYQT 그래프에 나타낼 low risk 갯수,high risk 갯수 리스트에 저장
+        distance_graph.append(distance_low_count)
+        distance_graph.append(distance_high_count)
+    return [distance_low_count, distance_high_count]
+
 
 # 직사각형 ROI 마우스 이벤트 핸들러 함수, 좌푯값 저장
 def Mouse_Callback_Rect(event, x, y, flags, params):
-    # Press The Left Button
     global step , start_x, end_x, start_y, end_y, mouse_is_pressing
-
+    # Press The Left Button
     if event == cv2.EVENT_LBUTTONDOWN :
         step = 1
         mouse_is_pressing = True
@@ -134,6 +153,7 @@ def Mouse_Callback_Rect(event, x, y, flags, params):
     else:
         print("Error : Mouse_Callback_Rect 함수 예외처리")
 
+
 # 폴리곤 ROI 마우스 이벤트 핸들러 함수, 좌푯값 저장
 def Mouse_Callback_Polygon(event, x, y, flags, params):
     # Press The Left Button
@@ -150,6 +170,7 @@ def Mouse_Callback_Polygon(event, x, y, flags, params):
         polygon_xy_list.clear()
     else:
         print("Error : Mouse_Callback_Proygon 함수 예외처리")
+
 
 # 직사각형 ROI 그리기 및 좌표값 변환 함수, 만약 Roi Mode 활성화 시 직사각형이 사라짐
 def draw_roi_rectangle(img, step, start_x, end_x, start_y, end_y):
@@ -178,7 +199,8 @@ def draw_roi_rectangle(img, step, start_x, end_x, start_y, end_y):
 
     return img, start_x, end_x, start_y, end_y
 
-# 폴리곤 ROI 그리기 및 좌표값 변환 함수
+
+# 폴리곤 ROI 그리기 및 좌표값 변환 함수, 만약 Roi Mode 활성화 시 폴리곤이 사라짐
 def draw_roi_polygon(img, step, polygon_xy_list):
     # Click The Mouse Button
     if step == 100:
@@ -217,6 +239,7 @@ def bbox_rel(*xyxy):
         h = bbox_h
     return x_c, y_c, w, h
 
+
 # 메인 실행함수
 def detect(opt, save_img=False):
     global running
@@ -224,17 +247,16 @@ def detect(opt, save_img=False):
     global start_x, start_y, end_x, end_y, polygon_xy_list
     global step, mouse_is_pressing
     global Choose_pyqt_Rect, Choose_pyqt_Polygon
-    global action_mode
-
+    global action_mode, distance_mode
+    global count_graph, fw_queue, distance_graph
 
     # pyqt start 버튼 누르면 다시 실행 될 수 있도록 True 설정
-    running =True
+    running = True
 
     out, source, weights, view_img, save_txt, imgsz = \
         opt.output, opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     webcam = source == '0' or source.startswith(
         'rtsp') or source.startswith('http') or source.endswith('.txt')
-
 
     # initialize deepsort
     cfg = get_config()
@@ -245,12 +267,9 @@ def detect(opt, save_img=False):
                         max_age=cfg.DEEPSORT.MAX_AGE, n_init=cfg.DEEPSORT.N_INIT, nn_budget=cfg.DEEPSORT.NN_BUDGET,
                         use_cuda=True)
 
-
-
     # 배회 침입 데이터 딕셔너리
     wander = {}
-    # Warning->Fighting 라벨 변환 큐 리스트 & Fighting 유지시간 저장 리스트 & 명령모드 유지시간 저장 딕셔너리
-    fw_queue = []
+    # Fighting 유지시간 저장 리스트 & 명령모드 유지시간 저장 딕셔너리
     fight_time = [False,0]
     control_time = {}
 
@@ -261,14 +280,12 @@ def detect(opt, save_img=False):
     os.makedirs(out)  # make new output folder
     half = device.type != 'cpu'  # half precision only supported on CUDA
 
-
     # Load model
     model = torch.load(weights, map_location=device)[
         'model'].float()  # load to FP32
     model.to(device).eval()
     if half:
         model.half()  # to FP16
-
 
     # Set Dataloader
     vid_path, vid_writer = None, None
@@ -282,34 +299,31 @@ def detect(opt, save_img=False):
         save_img = True
         dataset = LoadImages(source, img_size=imgsz)
 
-
     # Get names and colors
     names = model.module.names if hasattr(model, 'module') else model.names
-
 
     # Run inference
     t0 = time.time()
     img = torch.zeros((1, 3, imgsz, imgsz), device=device)  # init img
+
     # run once
     _ = model(img.half() if half else img) if device.type != 'cpu' else None
-
     save_path = str(Path(out))
     txt_path = str(Path(out)) + '/results.txt'
-
     vid = cv2.VideoCapture(source)
+
     # 실시간 영상저장
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    writer = cv2.VideoWriter('output.avi', fourcc, 6.0, (640, 480))
-
+    writer = cv2.VideoWriter('output.avi', fourcc, 6.0, (1280, 720)) #해상도에 따라 1280 720 맞춰줘야함
     filename = os.path.basename(source).split('.')[0]
     save_path = f"inference/output/{filename}_action.mp4"
     fps = vid.get(cv2.CAP_PROP_FPS)
     w = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
     h = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-
     # 영상 저장 처리
     vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
+
     # ffmpeg setup
     pipe = Popen([
         'ffmpeg', '-loglevel', 'quiet', '-y', '-f', 'image2pipe', '-vcodec', 'mjpeg', '-framerate', f'{fps}',
@@ -328,7 +342,7 @@ def detect(opt, save_img=False):
 
         start = time.time()
 
-        # Color 윈도우창을 이용해 마우스 좌푯값을 수정했을때만 실행
+        # ROI Settings 윈도우창을 이용해 마우스 좌푯값을 수정했을때만 실행
         if not (start_x == 0 or end_x == 0 or start_y == 0 or end_y == 0):
             # 직사각형, 폴리곤 메시지박스 선택 했을때
             if Choose_pyqt_Rect == True or Choose_pyqt_Polygon == True:
@@ -340,80 +354,46 @@ def detect(opt, save_img=False):
                         # 실제, 직사각형 ROI 영역 지정
                         img = img[:, :, start_y: end_y, start_x: end_x]
                         print(f"직사각형 ROI 영역 좌푯값 == start_x : {start_x}, start_y : {start_y}, end_x : {end_x}, end_y : {end_y}")
-
-
                     else:
                         # 실제, 폴리곤 ROI 영역 지정
                         img = img[:, :, start_y: end_y, start_x: end_x]
-
-                        '''
-                        # 호호수정
-
-                        img = img.reshape(480, 640, 3)
-                        #mask_img = np.zeros(img.shape, np.uint8)
-                        mask_img = img.copy()
-
-                        mask_img = cv2.fillPoly(mask_img, [np_xy], (0, 0, 0))
-                        img = cv2.bitwise_xor(img, mask_img)
-
-
-                        #black_img = np.zeros(img.shape, np.uint8)
-                        #cv2.bitwise_and(img, mask_img, black_img)
-                        img = img.reshape(1, 3, 480, 640)
-                        # 호호수정
-                        '''
                         print(
                             f"폴리곤 ROI 영역 좌푯값 == start_x : {start_x}, start_y : {start_y}, end_x : {end_x}, end_y : {end_y}")
             else:
                 print("PYQT 메시지 박스 '직사각형' 과 '폴리곤' 중 선택 하세요")
 
-        # 호호 수정
-        '''
-        polygon_xy_list = [[0, 0], [0, 380], [320, 380], [320,0]]
-        np_xy = np.array(polygon_xy_list)
-
-        img = img.reshape(384, 640, 3)
-        #mask_img = np.zeros(img.shape, np.uint8)
-        mask_img = img.copy()
-
-        mask_img = cv2.fillPoly(mask_img, [np_xy], (0, 0, 0))
-        img = cv2.bitwise_xor(img, mask_img)
-
-        # black_img = np.zeros(img.shape, np.uint8)
-        # cv2.bitwise_and(img, mask_img, black_img)
-        img = img.reshape(1, 3, 384, 640)
-        print(f"gkgkkgk  {img.shape}")
-        # 호호 수정
-        '''
-
         print(f'0번째 -->  {img.shape}')
         img = torch.from_numpy(img).to(device)
-        #print(f'0번째 -->  {img.shape}')
         img = img.half() if half else img.float()  # uint8 to fp16/32
-        #print(f'1번째 -->  {img.shape}')
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
-        #print(f'2번째 -->  {img.shape}')
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
-            #print(f'3번째 -->  {img.shape}')
-        #print(f'3번째 -->  {img.shape}')
 
         # Inference
         t1 = time_synchronized()
         pred = model(img, augment=opt.augment)[0]
-        #print(f'4번째 -->  {img.shape}')
+
         # Apply NMS
         pred = non_max_suppression(
             pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
         t2 = time_synchronized()
 
+        # distance 함수 인자에 사용할 리스트, 감지된 박스 좌표 저장
         people_coords = []
+
         # Process detections
         for i, det in enumerate(pred):  # detections per image
             if webcam:  # batch_size >= 1
                 p, s, im0 = path[i], '%g: ' % i, im0s[i].copy()
             else:
                 p, im0 = path, im0s
+
+                # 영일 영상
+                # ui = 144
+                # io = 1174
+                # op = 66
+                # pp = 400
+                # cv2.rectangle(im0, (ui, op), (io, pp), (0, 0, 255), 3)
 
             # s += '%gx%g ' % img.shape[2:]  # print string
             # save_path = str(Path(out) / Path(p).name)
@@ -451,37 +431,58 @@ def detect(opt, save_img=False):
 
                 # dist_thres_lim=(200, 250) 디폴트 값
                 # 객체별 거리 측정 후 선을 이어줌
-                distancing(people_coords, im0)
+                if distance_mode == True:
+                    lh_list = distancing(people_coords, im0)
+                    if lh_list is not None:
+                        low_counting_text = "Low Risk : {}".format(lh_list[0])
+                        cv2.putText(im0, low_counting_text, (300, im0.shape[0] - 25), cv2.LINE_AA, 0.85, (0, 255, 255), 2)
+
+                        high_counting_text = "High Risk : {}".format(lh_list[1])
+                        cv2.putText(im0, high_counting_text, (500, im0.shape[0] - 25), cv2.LINE_AA, 0.85, (0, 0, 255), 2)
 
                 # Pass detections to deepsort
-                im0 = deepsort.update(xywhs, confss, im0, wander, fw_queue, fight_time, control_time,action_mode)
+                im0 = deepsort.update(xywhs, confss, im0, wander, fw_queue, fight_time, control_time,action_mode, count_graph)
 
                 # db연결
                 conn = pymysql.connect(host="localhost", user="root", password="123456789", db="cctv_db",
                                        charset="utf8")
                 curs = conn.cursor()
-                sql = "select action,time from time"
-                curs.execute(sql)
+                curs2 = conn.cursor()
+
+                sqltime = "select id, action,time from all_in_one where action is not null"
+                sqlroaming = "select id,situation,time from all_in_one where situation is not null"
+
+                curs.execute(sqltime)
+                curs2.execute(sqlroaming)
+
                 rows = curs.fetchall()
+                rows2 = curs2.fetchall()
+
+                # 변수 x주고 x++
+                # x % 5 ==0 일경우
+
+                # 위젯에 출력
                 # db박스 초기화 후 데이터 마다 색상 변경
                 widg.clear()
-                for i in range(0, len(rows), 6):
-                    if (str(rows[i][0]) == 'danger'):
+                widg2.clear()
+
+                for i in range(0, len(rows)):
+                    if (str(rows[i][1]) == 'danger'):
                         widg.setTextColor(QColor(255, 51, 0))
                         widg.append(str(rows[i]))
                     else:
                         widg.setTextColor(QColor(255, 127, 0))
                         widg.append(str(rows[i]))
+                for i in range(0, len(rows2)):
+                    if (str(rows2[i][1]) == 'loitering'):
+                        widg2.setTextColor(QColor(139, 0, 255))
+                        widg2.append(str(rows2[i]))
+                    else:
+                        widg2.setTextColor(QColor(0, 255, 0))
+                        widg2.append(str(rows2[i]))
 
-
-                # # draw boxes for visualization
-                # if len(outputs) > 0:
-                #     bbox_xyxy = outputs[:, :4]
-                #     identities = outputs[:, -1]
-                #     draw_boxes(im0, bbox_xyxy, identities)
             else:
                 deepsort.increment_ages()
-
 
             # Print time (inference + NMS), 프레임 밀리는 오류 예외처리를 통해 넘어감
             try:
@@ -490,9 +491,9 @@ def detect(opt, save_img=False):
                 runtime_fps = 100
                 pass
 
-            # print(f"Runtime FPS: {runtime_fps:.2f}")
             pbar.set_description(f"runtime_fps: {runtime_fps}")
             pbar.update(1)
+
             # Stream results
             height, width = im0.shape[:2]
 
@@ -501,12 +502,10 @@ def detect(opt, save_img=False):
 
                 # 직사각형 메시지 선택 했을때 OR 폴리곤 메시지 선택 했을때만 실행
                 if Choose_pyqt_Rect == True or Choose_pyqt_Polygon == True :
-                    # PYQT ROI 활성화 버튼을 누를시 Color 윈도우창 생성 및 직사각형 그리기
+                    # PYQT ROI 활성화 버튼을 누를시 ROI Settings 윈도우창 생성 및 직사각형 그리기
                     if redrectangle_roi_pyqt == True:
-
-                        cv2.namedWindow("Color")
-                        cv2.setMouseCallback("Color", Mouse_Callback_Rect)
-
+                        cv2.namedWindow("ROI Settings")
+                        cv2.setMouseCallback("ROI Settings", Mouse_Callback_Rect)
                         im0, start_x, end_x, start_y, end_y = draw_roi_rectangle(im0, step, start_x, end_x, start_y, end_y)
 
                         # 마우스 눌렀다 때면 PYQT 창에도 휘발성으로 노란색 직사각형을 그림
@@ -514,24 +513,23 @@ def detect(opt, save_img=False):
                             #redrectangle_roi_pyqt = False # 만약 눌렀다 떈 동시에 윈도우창을 끄고 싶으면
                             cv2.rectangle(im0, (start_x, start_y), (end_x, end_y), (0, 255, 255), 3)
 
-                        cv2.imshow("Color", im0)
+                        cv2.imshow("ROI Settings", im0)
                         key = cv2.waitKey(1)
 
                         # esc 누를경우, ROI 직사각형 좌표 설정 종료 및 RoI Mode 활성화
                         if key == 27:
                             redrectangle_roi_pyqt = False
-                            cv2.destroyWindow("Color")
+                            cv2.destroyWindow("ROI Settings")
                             roi_mode_on = True
                             mouse_is_pressing = False
 
-                    # PYQT ROI 활성화 버튼을 누를시 Color 윈도우창 생성 및 폴리곤 점 찍고 선 이어주기
+                    # PYQT ROI 활성화 버튼을 누를시 ROI Settings 윈도우창 생성 및 폴리곤 점 찍고 선 이어주기
                     elif redpolygon_roi_pyqt == True:
 
                             cv2.namedWindow("Polygon_Window")
+                            cv2.resizeWindow(winname='Polygon_Window', width=1280, height=960)
                             cv2.setMouseCallback("Polygon_Window", Mouse_Callback_Polygon)
-
                             im0 = draw_roi_polygon(im0, step, polygon_xy_list)
-
                             cv2.imshow("Polygon_Window", im0)
                             key = cv2.waitKey(1)
 
@@ -543,7 +541,6 @@ def detect(opt, save_img=False):
                                 redpolygon_roi_pyqt = False
                                 cv2.destroyWindow("Polygon_Window")
                                 roi_mode_on = True
-
 
                 # ROI Mode 활성화 시 PYQT 창에 직사각형 고정, 이부분 오류날수도
                 if roi_mode_on == True:
@@ -557,9 +554,10 @@ def detect(opt, save_img=False):
 
                             # 테스트 박스
                             pp_x, pp_y, pp_w, pp_h = cv2.boundingRect(np_xy)
-                            #cv2.rectangle(im0, (pp_x, pp_y), ((pp_w + p_x), (pp_h + p_y)), (255, 0, 255), 3)
+                            # cv2.rectangle(im0, (pp_x, pp_y), ((pp_w + p_x), (pp_h + p_y)), (255, 0, 255), 3)
 
                 writer.write(im0)
+
                 # 파이큐티 화면 출력 VideoSignal1
                 im0 = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
                 h, w, c = im0.shape
@@ -590,6 +588,12 @@ def detect(opt, save_img=False):
 # PYQT 버튼 동작 함수
 def start():
     global args
+    conn = pymysql.connect(host="localhost", user="root", password="123456789", db="cctv_db",
+                           charset="utf8")
+    curs = conn.cursor()
+    sql = """delete from all_in_one where no !=1"""
+    curs.execute(sql)
+    conn.commit()
     print("started..")
     detect(args)
 
@@ -597,7 +601,6 @@ def stop():
     global running
     print("stoped..")
     running = False
-    # raise StopIteration
 
 def roi_on():
     global Choose_pyqt_Rect, Choose_pyqt_Polygon
@@ -618,9 +621,8 @@ def roi_off():
     step = 0
     start_x, start_y, end_x, end_y = 0, 0, 0, 0
     roi_mode_on = False
-
     mouse_is_pressing = False
-    cv2.destroyWindow("Color")
+    cv2.destroyWindow("ROI Settings")
     polygon_xy_list.clear()
     cv2.destroyWindow("Polygon_Window")
 
@@ -629,19 +631,18 @@ def onExit():
     stop()
     sys.exit()
 
-
 def connecttion():
     global Choose_pyqt_Rect, Choose_pyqt_Polygon
     if radio_rectangle.isChecked():
         Choose_pyqt_Rect = True
         Choose_pyqt_Polygon = False
-
         print("You choose Rect_Mode ..")
+
     elif radio_polygon.isChecked():
         Choose_pyqt_Rect = False
         Choose_pyqt_Polygon = True
-
         print("You choose Polygon_Mode ..")
+
     else :
         Choose_pyqt_Rect = False
         Choose_pyqt_Polygon = False
@@ -657,13 +658,48 @@ def mode_disable():
     global action_mode
     action_mode = "disable"
 
+def mode_distance():
+    global distance_mode
+    distance_mode = True
+def mode_ndistance():
+    global distance_mode
+    distance_mode = False
+
+# 그래프 데이터 가져오기
+def get_data():
+    global fw_queue, action_mode, count_graph, distance_graph
+    new_time_data = int(time.time())
+
+    if not distance_graph:
+        y2 = -0.1
+        y2_2 = 0
+    else :
+        y2 = distance_graph[-2] - 0.1
+        y2_2 = distance_graph[-1]
+
+    if not count_graph:
+        y1 = 0
+    else :
+        y1 = count_graph[-1]
+
+    if not fw_queue:
+        y3 = 0
+    else :
+        graph_score = 0
+        for i in range(len(fw_queue)):
+            graph_score = graph_score + fw_queue[i]
+        y3  = graph_score
+
+    win2.update_plot(new_time_data, y1, y2, y2_2, y3)
+    distance_graph.clear()
+    count_graph.clear()
+
 #  웹캠 또는 영상으로 지정하는 변수 파이큐티 사용 하기위해
 device = '0'
 #device = 'inference/test1.mp4'
-#device = 'inference/ped_Trim.mp4'
-#device = 'inference/ped.mp4'
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str,
                         default='yolov5/weights/yolov5s.pt', help='model.pt path')
@@ -672,7 +708,7 @@ if __name__ == '__main__':
                         default=device, help='source')
     parser.add_argument('--output', type=str, default='inference/output',
                         help='output folder')  # output folder
-    parser.add_argument('--img-size', type=int, default=640,
+    parser.add_argument('--img-size', type=int, default=1280,
                         help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float,
                         default=0.4, help='object confidence threshold')
@@ -706,17 +742,27 @@ if __name__ == '__main__':
 
     # PTQT 디자인 및 위젯 생성
     else:
-
         app = QtWidgets.QApplication(sys.argv)
         win = QtWidgets.QWidget()
+
+        win2 = Realime_graph()
+        # 실시간 그래프 불러오기
+        mytimer = QTimer()
+        # 1초마다 갱신
+        mytimer.start(1000)
+        mytimer.timeout.connect(get_data)
+        win2.show()
+
         vbox = QtWidgets.QHBoxLayout()
         vbox2 = QtWidgets.QVBoxLayout()
         vbox3 = QtWidgets.QVBoxLayout()
         vbox4 = QtWidgets.QVBoxLayout()
         vbox5 = QtWidgets.QVBoxLayout()
         vbox6 = QtWidgets.QVBoxLayout()
-        vbox7 = QtWidgets.QVBoxLayout()
-        widg = QtWidgets.QTextEdit()
+        vbox7 = QtWidgets.QHBoxLayout()
+        vbox8 = QtWidgets.QVBoxLayout()
+        vbox9 = QtWidgets.QVBoxLayout()
+        vbox10 = QtWidgets.QVBoxLayout()
 
         gbox = QtWidgets.QGroupBox()
         gbox.setTitle("Camera")
@@ -728,6 +774,12 @@ if __name__ == '__main__':
         gbox4.setTitle("Action Detection")
         gbox5 = QtWidgets.QGroupBox()
         gbox5.setTitle("Notice")
+        gbox6 = QtWidgets.QGroupBox()
+        gbox6.setTitle("Action")
+        gbox7 = QtWidgets.QGroupBox()
+        gbox7.setTitle("Roaming")
+        gbox8 = QtWidgets.QGroupBox()
+        gbox8.setTitle("Distancing")
 
         btn_start = QtWidgets.QPushButton("Camera on")
         btn_stop = QtWidgets.QPushButton("Camera off")
@@ -738,6 +790,11 @@ if __name__ == '__main__':
         btn_fight = QtWidgets.QPushButton("Fight detection mode")
         btn_control = QtWidgets.QPushButton("Control detection mode")
         btn_disable = QtWidgets.QPushButton("Disable all detections")
+        btn_distance = QtWidgets.QPushButton("Distance on")
+        btn_nditance = QtWidgets.QPushButton("Distance off")
+
+        widg = QtWidgets.QTextEdit()
+        widg2 = QtWidgets.QTextEdit()
 
         vbox3.addWidget(btn_start)
         vbox3.addWidget(btn_stop)
@@ -748,18 +805,27 @@ if __name__ == '__main__':
         vbox6.addWidget(btn_fight)
         vbox6.addWidget(btn_control)
         vbox6.addWidget(btn_disable)
-        vbox7.addWidget(widg)
+        vbox7.addWidget(gbox6)
+        vbox7.addWidget(gbox7)
+        vbox8.addWidget(widg)
+        vbox9.addWidget(widg2)
+        vbox10.addWidget(btn_distance)
+        vbox10.addWidget(btn_nditance)
 
         gbox.setLayout(vbox3)
         gbox2.setLayout(vbox4)
         gbox3.setLayout(vbox5)
         gbox4.setLayout(vbox6)
         gbox5.setLayout(vbox7)
+        gbox6.setLayout(vbox8)
+        gbox7.setLayout(vbox9)
+        gbox8.setLayout(vbox10)
 
         vbox2.addWidget(gbox)
         vbox2.addWidget(gbox2)
         vbox2.addWidget(gbox3)
         vbox2.addWidget(gbox4)
+        vbox2.addWidget(gbox8)
         vbox2.addWidget(gbox5)
 
         win.setStyleSheet(
@@ -785,11 +851,15 @@ if __name__ == '__main__':
             "color: white;"
             "background-color: rgb(47, 42, 53)"
         )
+        gbox8.setStyleSheet(
+            "color: white;"
+            "background-color: rgb(47, 42, 53)"
+        )
 
         VideoSignal1 = QtWidgets.QLabel()
 
         win.setWindowTitle("Prison Artificial Intelligent CCTV")
-        win.resize(500, 200)
+        win.resize(50, 100)
 
         btn_start.clicked.connect(start)
         btn_stop.clicked.connect(stop)
@@ -800,12 +870,12 @@ if __name__ == '__main__':
         radio_polygon.clicked.connect(connecttion)
         radio_rectangle.clicked.connect(connecttion)
 
-
         btn_fight.clicked.connect(mode_fight)
         btn_control.clicked.connect(mode_control)
         btn_disable.clicked.connect(mode_disable)
 
-        # check.clicked.connect(connecttion)
+        btn_distance.clicked.connect(mode_distance)
+        btn_nditance.clicked.connect(mode_ndistance)
 
         vbox.addWidget(VideoSignal1)
         vbox.addLayout(vbox2)
@@ -813,4 +883,6 @@ if __name__ == '__main__':
         win.setLayout(vbox)
         win.show()
         sys.exit(app.exec_())
+
+
 

@@ -1,11 +1,12 @@
-import torch # PyTorch를 불러옵니다.
+import torch
+# GPU가 사용 가능한지 확인합니다.
 print(torch.cuda.get_device_name(0))
-print(torch.cuda.is_available()) # GPU가 사용 가능한지 확인합니다.
+print(torch.cuda.is_available())
 print(torch.cuda.device_count())
 
 import mxnet as mx
+# MX GPU가 사용 가능한지 확인합니다.
 print(mx.context.num_gpus())
-
 with mx.Context('gpu', 0):
     print(mx.current_context())
 

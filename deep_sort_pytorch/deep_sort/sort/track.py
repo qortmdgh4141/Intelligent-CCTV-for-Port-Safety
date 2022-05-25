@@ -1,15 +1,10 @@
-# vim: expandtab:ts=4:sw=4
-import time
 from collections import deque
 import mxnet as mx
 import pymysql
 from mxnet import gluon, nd, image
-from mxnet.gluon.data.vision import transforms
 from gluoncv.data.transforms import video
-from gluoncv import utils
 import numpy as np
 import cv2
-from gluoncv.data.transforms.pose import detector_to_alpha_pose, heatmap_to_coord_alpha_pose
 
 
 class TrackState:
@@ -91,9 +86,8 @@ class Track:
         self._max_age = max_age
 
 
-        # Fighting Mode 일시 16으로 설정
+        # Fighting Mode 일시 16으로 설정 (명령 Mode 일시 32으로 설정)
         self.SAMPLE_DURATION = 16
-        # 명령 Mode 일시 32으로 설정
 
         self.frames = deque(maxlen=self.SAMPLE_DURATION)
         self.action = None
@@ -107,7 +101,7 @@ class Track:
         self.frames.append(frame)
 
 
-    def get_action(self, net, action_mode="fight"):
+    def get_action(self, net, action_mode="fight", track_id="No_Id"):
         if len(self.frames) < self.SAMPLE_DURATION:
             return None
 
@@ -117,17 +111,17 @@ class Track:
         print(f"INFO: action input shape:")
         print([clip.shape for clip in clip_input])
         clip_input = np.stack(clip_input, axis=0)
+
         # db연결
         conn = pymysql.connect(host="localhost", user='root', password="123456789", db="cctv_db",
                                charset="utf8")
         curs = conn.cursor()
+        curs2 = conn.cursor()
 
-
-        # Fighting Mode 일시 16으로 설정
+        # Fighting Mode 일시 16으로 설정(명령 Mode 일시 32으로 설정)
         clip_input = clip_input.reshape((-1,) + (16, 3, 224, 224))
-        # 명령 Mode 일시 32으로 설정
-        clip_input = np.transpose(clip_input, (0, 2, 1, 3, 4))
 
+        clip_input = np.transpose(clip_input, (0, 2, 1, 3, 4))
 
         # pred는 2차원배열이며, type이 ndarry : <class 'mxnet.ndarray.ndarray.NDArray'>
         pred = net(nd.array(clip_input, ctx=mx.gpu(0)))
@@ -144,29 +138,34 @@ class Track:
                   (classes[ind[i].asscalar()], nd.softmax(pred)[0][ind[i]].asscalar()))
         print("-----------------------------------------------------------------------------------------")
 
-        #num = ind[0].asscalar()
+        # num = ind[0].asscalar()
 
-        # f_list = ["Hitting", "Wiping", "Spinning", "Throwing", "Pulling", "Putting"]
-        f_list = ["Hitting", "Throwing"]
+        # f_list = ["Hitting", "Wiping", "Spinning", "Throwing", "Pulling", "Putting"] # f_list = ["Hitting", "Throwing"]
+        f_list = ["Hitting"]
         f2_list = ['hand on head', 'Get down', 'clap' ]
 
         if action_mode == "fight":
             for i in range(topK):
-                if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.4:
-                    #if classes[ind[i].asscalar()] in f_list:
-                    #2초마다 데이ㅓ베이스에 입력
-                    if classes[ind[i].asscalar()] in f_list:
-                        #if ((round(time.time()) % 2) == 0):
-                        sql = """insert into time(action, time)
-                                                                    values(%s, now())"""
-                        curs.execute(sql, ('warning'))
+                if classes[ind[i].asscalar()] in f_list:
+                    if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.7:
+                        # 2초마다 데이터베이스에 입력
+                        sql = """insert into all_in_one(id, action, time)
+                                                             values(%s, %s, now())"""
+                        sql2 = """select distinct id, action from all_in_one"""
+
+                        curs2.execute(sql2)
+                        rows = curs2.fetchall()
+                        a = []
+                        for i in range(len(rows)):
+                            a.append(rows[i])
+                        if (str(track_id), 'warning') not in a:
+                            curs.execute(sql, (track_id, 'warning'))
                         conn.commit()
                         return "Warning Action"
 
         elif action_mode == "control":
             for i in range(topK):
                 if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.2:
-                    #if classes[ind[i].asscalar()] in f_list
                     if classes[ind[i].asscalar()] in f2_list:
                         return classes[ind[i].asscalar()]
 

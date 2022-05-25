@@ -104,7 +104,6 @@ class InfiniteDataLoader(torch.utils.data.dataloader.DataLoader):
 
 class _RepeatSampler(object):
     """ Sampler that repeats forever
-
     Args:
         sampler (Sampler)
     """
@@ -273,6 +272,10 @@ class LoadStreams:  # multiple IP or RTSP cameras
             print('%g/%g: %s... ' % (i + 1, n, s), end='')
             cap = cv2.VideoCapture(eval(s) if s.isnumeric() else s)
             assert cap.isOpened(), 'Failed to open %s' % s
+
+            # 웹캠 사이즈 조절
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+
             w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             fps = cap.get(cv2.CAP_PROP_FPS) % 100
