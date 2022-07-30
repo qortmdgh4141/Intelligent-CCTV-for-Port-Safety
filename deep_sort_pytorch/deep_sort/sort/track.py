@@ -140,14 +140,15 @@ class Track:
 
         # num = ind[0].asscalar()
 
-        # f_list = ["Hitting", "Wiping", "Spinning", "Throwing", "Pulling", "Putting"] # f_list = ["Hitting", "Throwing"]
-        f_list = ["Hitting"]
-        f2_list = ['hand on head', 'Get down', 'clap' ]
+        f1_list = ["Hitting"] #f_list = ["Hitting", "Wiping", "Spinning", "Throwing", "Pulling", "Putting"] # f_list = ["Hitting", "Throwing"]
+        f2_list = ['Get down', 'situp'] # f2_list = ['hand on head', 'Get down', situp]
+        f3_list = ['smoke', 'chew', "eat"]
+
 
         if action_mode == "fight":
             for i in range(topK):
-                if classes[ind[i].asscalar()] in f_list:
-                    if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.7:
+                if classes[ind[i].asscalar()] in f1_list:
+                    if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.4:
                         # 2초마다 데이터베이스에 입력
                         sql = """insert into all_in_one(id, action, time)
                                                              values(%s, %s, now())"""
@@ -163,10 +164,19 @@ class Track:
                         conn.commit()
                         return "Warning Action"
 
-        elif action_mode == "control":
+
+        elif action_mode == "falling_down":
             for i in range(topK):
                 if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.2:
                     if classes[ind[i].asscalar()] in f2_list:
+                        return "Warning Action"
+                        #return classes[ind[i].asscalar()]
+
+
+        elif action_mode == "smoking":
+            for i in range(topK):
+                if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.2:
+                    if classes[ind[i].asscalar()] in f3_list:
                         return classes[ind[i].asscalar()]
 
     def to_tlwh(self):

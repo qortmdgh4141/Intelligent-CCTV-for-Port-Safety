@@ -180,7 +180,9 @@ class DeepSort(object):
                 action = None
             elif action_mode == "fight":
                 action = track.get_action(self.net, action_mode,track.track_id)
-            elif action_mode == "control":
+            elif action_mode == "falling_down":
+                action = track.get_action(self.net2, action_mode)
+            elif action_mode == "smoking":
                 action = track.get_action(self.net2, action_mode)
             else :
                 print("action 오류")
@@ -193,6 +195,7 @@ class DeepSort(object):
             else:
                 fw_queue.append(0)
 
+            # 싸움 상황 일시 초록색, 주황색, 빨간색 단계별
             if action_mode == "fight":
                 fw_score = 0
                 for i in range(len(fw_queue)):
@@ -241,24 +244,76 @@ class DeepSort(object):
                             curs.execute(sql, (track.track_id, 'danger'))
                         conn.commit()
 
-            # Controlled 상황일 시 파란색 박스 3초간 지속
-            elif action_mode == "control":
+            # 쓰러짐 상황 일시 초록색, 주황색, 빨간색 단계별
+            elif action_mode == "falling_down":
+                fw_score = 0
+                for i in range(len(fw_queue)):
+                    fw_score =  fw_score + fw_queue[i]
+                if (fw_score >= 45) :
+                    if (fight_time[0] == False):
+                        fight_time.clear()
+                        fight_time.append(True)
+                        fight_time.append(round(time.time()))
+
+                    action = 'Dangerous Action'
+
+
+                    # DB 기록 Dangerous 상황, 시간 기록
+                    '''sql = """insert into all_in_one(id, action, time)
+                                                 values(%s, %s, now())"""
+                    sql2 = """select distinct id, action from all_in_one"""
+
+                    curs2.execute(sql2)
+                    rows = curs2.fetchall()
+                    a = []
+                    for i in range(len(rows)):
+                        a.append(rows[i])
+                    if (str(track.track_id), 'danger') not in a:
+                        curs.execute(sql, (track.track_id, 'danger'))
+                    conn.commit()'''
+
+                # Dangerous 상황일 시 빨간색 박스 5초간 지속
+                elif fight_time[0] == True:
+                    tm_minus = round(time.time())-fight_time[1]
+                    if tm_minus > 5:
+                        fight_time.clear()
+                        fight_time.append(False)
+                        fight_time.append(0)
+                    '''else:
+                        # DB 기록 Dangerous 상황, 시간 기록
+                        sql = """insert into all_in_one(id, action, time)
+                                                                                                                                        values(%s, %s, now())"""
+                        sql2 = """select distinct id from all_in_one"""
+
+                        curs2.execute(sql2)
+                        rows = curs2.fetchall()
+                        a = []
+                        for i in range(len(rows)):
+                            a.append(rows[i][0])
+                        if str(track.track_id) not in a:
+                            curs.execute(sql, (track.track_id, 'danger'))
+                        conn.commit()'''
+
+
+            # Smoking 상황일 시 파란색 박스 3초간 지속
+            elif action_mode == "smoking":
                 # 명령 모드 리스트 박스
-                control_list = ['hand on head', 'Get down', 'clap']
+                control_list = ['smoke', 'chew', "eat"]
                 # key 값은 id, Value값은 시간
                 id = int(track.track_id)
                 if action in control_list:
-                    action = 'Controlled action'
+                    action = 'Smoking Action'
                     control_time[id] = round(time.time())
 
                 elif action not in control_list:
                     if id in control_time:
                         if (round(time.time()) - control_time[id]) < 3:
-                            action = 'Controlled action'
+                            action = 'Smoking Action'
                         else:
                             del (control_time[id])
                     else:
-                        action = 'Uncontrolled action'
+                        action = ''
+
 
             print(f"INFO: action {action}")
 
@@ -272,7 +327,7 @@ class DeepSort(object):
 
         # 인원 수 count
         counting_text = "People Counting : {}".format(count)
-        cv2.putText(ori_img, counting_text, (10, ori_img.shape[0] - 25), cv2.LINE_AA, 0.85, (0, 0, 255), 2)
+        cv2.putText(ori_img, counting_text, (10, ori_img.shape[0] - 25), cv2.LINE_AA, 0.85, (0, 0, 0), 2)
 
         # run 파일에 넘겨줄 인원수 리스트
         count_graph.append(count)
@@ -344,20 +399,41 @@ class DeepSort(object):
                 img[y1: y2, x1: x2] = ROI_box
                 cv2.putText(img, label, (x1, y1 +
                                          t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [0, 255, 0], 2)
-        # 명령 모드
-        elif action_mode == "control":
-            if action == 'Controlled action' :
+        #  쓰러짐 모드
+        elif action_mode == "falling_down":
+            if action == 'Warning Action':
                 ROI_box = img[y1: y2, x1: x2]
-                ROI_box = cv2.add(ROI_box, (160, 110, 50, 0))
+                ROI_box = cv2.add(ROI_box, (55, 110, 145, 0))
                 img[y1: y2, x1: x2] = ROI_box
                 cv2.putText(img, label, (x1, y1 +
-                                         t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [255, 0, 0], 2)
-            elif action == 'Uncontrolled action':
+                                         t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [0, 127, 255], 2)
+            elif action == 'Dangerous Action':
+                ROI_box = img[y1: y2, x1: x2]
+                ROI_box = cv2.add(ROI_box, (35, 70, 155, 0))
+                img[y1: y2, x1: x2] = ROI_box
+                cv2.putText(img, label, (x1, y1 +
+                                         t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [0, 0, 255], 2)
+            else:
+                ROI_box = img[y1: y2, x1: x2]
+                ROI_box = cv2.add(ROI_box, (10, 40, 10, 0))
+                img[y1: y2, x1: x2] = ROI_box
+                cv2.putText(img, label, (x1, y1 +
+                                         t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [0, 255, 0], 2)
+
+        # smoking 모드
+        elif action_mode == "smoking":
+            if action == 'Smoking Action' :
                 ROI_box = img[y1: y2, x1: x2]
                 ROI_box = cv2.add(ROI_box, (255, 51, 153, 0))
                 img[y1: y2, x1: x2] = ROI_box
                 cv2.putText(img, label, (x1, y1 +
                                          t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [0, 0, 255], 2)
+            else :
+                ROI_box = img[y1: y2, x1: x2]
+                ROI_box = cv2.add(ROI_box, (10, 40, 10, 0))
+                img[y1: y2, x1: x2] = ROI_box
+                cv2.putText(img, label, (x1, y1 +
+                                         t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, textsize, [0, 255, 0], 2)
 
         # 모드 선택 안함
         elif action_mode == "disable" :

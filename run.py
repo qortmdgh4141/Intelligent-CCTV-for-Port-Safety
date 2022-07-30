@@ -60,9 +60,10 @@ distance_mode = False
 distance_graph = []
 
 
+
 # 객체별 거리 측정 함수
 # dist_thres_lim=(200,250)
-def distancing(people_coords, img, dist_thres_lim=(400,1500)):
+def distancing(people_coords, img, dist_thres_lim=(250, 550)):
     global distance_graph
     distance_high_count = 0
     distance_low_count = 0
@@ -602,6 +603,7 @@ def stop():
     print("stoped..")
     running = False
 
+
 def roi_on():
     global Choose_pyqt_Rect, Choose_pyqt_Polygon
     global redrectangle_roi_pyqt, redpolygon_roi_pyqt
@@ -651,12 +653,16 @@ def connecttion():
 def mode_fight():
     global action_mode
     action_mode = "fight"
-def mode_control():
+def mode_falling_down():
     global action_mode
-    action_mode = "control"
+    action_mode = "falling_down"
+def mode_smoking():
+    global action_mode
+    action_mode = "smoking"
 def mode_disable():
     global action_mode
     action_mode = "disable"
+
 
 def mode_distance():
     global distance_mode
@@ -788,7 +794,8 @@ if __name__ == '__main__':
         radio_polygon = QtWidgets.QRadioButton("Polygon")
         radio_rectangle = QtWidgets.QRadioButton("Rectangle")
         btn_fight = QtWidgets.QPushButton("Fight detection mode")
-        btn_control = QtWidgets.QPushButton("Control detection mode")
+        btn_falling_down = QtWidgets.QPushButton("Falling down detection mode")
+        btn_smoking = QtWidgets.QPushButton("Smoking detection mode")
         btn_disable = QtWidgets.QPushButton("Disable all detections")
         btn_distance = QtWidgets.QPushButton("Distance on")
         btn_nditance = QtWidgets.QPushButton("Distance off")
@@ -803,7 +810,8 @@ if __name__ == '__main__':
         vbox5.addWidget(radio_polygon)
         vbox5.addWidget(radio_rectangle)
         vbox6.addWidget(btn_fight)
-        vbox6.addWidget(btn_control)
+        vbox6.addWidget(btn_falling_down)
+        vbox6.addWidget(btn_smoking)
         vbox6.addWidget(btn_disable)
         vbox7.addWidget(gbox6)
         vbox7.addWidget(gbox7)
@@ -871,7 +879,8 @@ if __name__ == '__main__':
         radio_rectangle.clicked.connect(connecttion)
 
         btn_fight.clicked.connect(mode_fight)
-        btn_control.clicked.connect(mode_control)
+        btn_falling_down.clicked.connect(mode_falling_down)
+        btn_smoking.clicked.connect(mode_smoking)
         btn_disable.clicked.connect(mode_disable)
 
         btn_distance.clicked.connect(mode_distance)
