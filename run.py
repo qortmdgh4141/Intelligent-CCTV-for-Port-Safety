@@ -38,6 +38,7 @@ running = True
 # PYQT 직사각형, 폴리곤 ROI 버튼 선택
 redrectangle_roi_pyqt = False
 redpolygon_roi_pyqt = False
+restricted_area_redrectangle_roi_pyqt = False
 
 Choose_pyqt_Rect = False
 Choose_pyqt_Polygon = False
@@ -46,8 +47,9 @@ Choose_pyqt_Polygon = False
 roi_mode_on = False
 
 # 마우스 상태 및 직사각형 ROI 좌표, 폴리곤 좌표 리스트 초기화
-mouse_is_pressing, step = False, 0
+mouse_is_pressing, step, distance_roi_step = False, 0, 0
 start_x, start_y, end_x, end_y = 0,0,0,0
+distance_roi_st_x, distance_roi_st_y, distance_roi_end_x, distance_roi_end_y = 0, 0 ,0 ,0
 polygon_xy_list = []
 
 # 행동 인식 딥러닝 모델 선택
@@ -55,14 +57,89 @@ action_mode = "disable"
 
 # 거리 모드 초기화
 distance_mode = False
+roi_distance_mode = False
 
 # PYQT 그래프에 나타낼 거리에 따른 "low risk, high risk" 리스트
 distance_graph = []
 
 
 
-# 객체별 거리 측정 함수
-# dist_thres_lim=(200,250)
+# 제한구역와 객체 간의 거리측정
+def restricted_area_distancing(people_coords, img, distance_roi_st_x, distance_roi_st_y, distance_roi_end_x, distance_roi_end_y, dist_thres_lim=(250, 10000)):
+    # restricted_area roi 영역 그리기
+    cv2.rectangle(img, (distance_roi_st_x, distance_roi_st_y), (distance_roi_end_x, distance_roi_end_y), (0, 0, 255), 3)
+
+    a = torch.tensor(distance_roi_st_x, device="cuda:0")
+    b = torch.tensor(distance_roi_st_y, device="cuda:0")
+    c = torch.tensor(distance_roi_end_x, device="cuda:0")
+    d = torch.tensor(distance_roi_end_y, device="cuda:0")
+
+    roi_xyxy = list()
+    roi_xyxy.append(a)
+    roi_xyxy.append(b)
+    roi_xyxy.append(c)
+    roi_xyxy.append(d)
+
+    # Plot lines connecting people
+    already_red = dict()  # dictionary to store if a plotted rectangle has already been labelled as high risk
+    centers = []
+
+    for i in people_coords:
+        centers.append(((int(i[2]) + int(i[0])) // 2, (int(i[3]) + int(i[1])) // 2))
+    roi_centers = ((int(a) + int(c)) // 2, (int(b) + int(d)) // 2)
+    centers.append(roi_centers)
+    for j in centers:
+        already_red[j] = 0
+
+    x_combs = list()
+    for i in range(len(people_coords)):
+        x_combs.append([people_coords[i], roi_xyxy])
+
+    radius = 10
+    thickness = 5
+
+    for x in x_combs:
+        xyxy1, xyxy2 = x[0], x[1]
+        cntr1 = ((int(xyxy1[2]) + int(xyxy1[0])) // 2, (int(xyxy1[3]) + int(xyxy1[1])) // 2)
+        cntr2 = ((int(xyxy2[2]) + int(xyxy2[0])) // 2, (int(xyxy2[3]) + int(xyxy2[1])) // 2)
+
+        dist = ((cntr2[0] - cntr1[0]) ** 2 + (cntr2[1] - cntr1[1]) ** 2) ** 0.5
+
+        if dist > dist_thres_lim[0] and dist < dist_thres_lim[1]:
+            color = (0, 255, 255)
+            label = "Low Risk "
+            cv2.line(img, cntr1, cntr2, color, thickness)
+            if already_red[cntr1] == 0:
+                cv2.circle(img, cntr1, radius, color, -1)
+            if already_red[cntr2] == 0:
+                cv2.circle(img, cntr2, radius, color, -1)
+            # Plots one bounding box on image img
+            tl = round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
+            for xy in x:
+                cntr = ((int(xy[2]) + int(xy[0])) // 2, (int(xy[3]) + int(xy[1])) // 2)
+                if already_red[cntr] == 0:
+                    c1, c2 = (int(xy[0]), int(xy[1])), (int(xy[2]), int(xy[3]))
+                    tf = max(tl - 1, 1)  # font thickness
+                    t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+                    c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+
+        elif dist < dist_thres_lim[0]:
+            color = (0, 0, 255)
+            label = "High Risk"
+            already_red[cntr1] = 1
+            already_red[cntr2] = 1
+            cv2.line(img, cntr1, cntr2, color, thickness)
+            cv2.circle(img, cntr1, radius, color, -1)
+            cv2.circle(img, cntr2, radius, color, -1)
+            # Plots one bounding box on image img
+            tl = round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
+            for xy in x:
+                c1, c2 = (int(xy[0]), int(xy[1])), (int(xy[2]), int(xy[3]))
+                tf = max(tl - 1, 1)  # font thickness
+                t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+                c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+
+# 객체별 거리측정
 def distancing(people_coords, img, dist_thres_lim=(250, 550)):
     global distance_graph
     distance_high_count = 0
@@ -130,7 +207,7 @@ def distancing(people_coords, img, dist_thres_lim=(250, 550)):
 
 
 # 직사각형 ROI 마우스 이벤트 핸들러 함수, 좌푯값 저장
-def Mouse_Callback_Rect(event, x, y, flags, params):
+def Mouse_Callback_Rect_One(event, x, y, flags, params):
     global step , start_x, end_x, start_y, end_y, mouse_is_pressing
     # Press The Left Button
     if event == cv2.EVENT_LBUTTONDOWN :
@@ -152,8 +229,32 @@ def Mouse_Callback_Rect(event, x, y, flags, params):
         end_x = x
         end_y = y
     else:
-        print("Error : Mouse_Callback_Rect 함수 예외처리")
+        print("Error : Mouse_Callback_Rect_One 함수 예외처리")
 
+# 제한구역 직사각형 ROI 마우스 이벤트 핸들러 함수, 좌푯값 저장
+def Mouse_Callback_Rect_Two(event, x, y, flags, params):
+    global distance_roi_step , distance_roi_st_x, distance_roi_st_y, distance_roi_end_x, distance_roi_end_y, mouse_is_pressing
+    # Press The Left Button
+    if event == cv2.EVENT_LBUTTONDOWN :
+        distance_roi_step = 1
+        mouse_is_pressing = True
+        distance_roi_st_x = x
+        distance_roi_st_y = y
+    # Moving The Mouse
+    elif event == cv2.EVENT_MOUSEMOVE:
+        # If Pressing The Mouse
+        if mouse_is_pressing:
+            distance_roi_step = 2
+            distance_roi_end_x = x
+            distance_roi_end_y = y
+    # Release The Left Button
+    elif event == cv2.EVENT_LBUTTONUP:
+        distance_roi_step = 3
+        mouse_is_pressing = False
+        distance_roi_end_x = x
+        distance_roi_end_y = y
+    else:
+        print("Error : Mouse_Callback_Rect_Two 함수 예외처리")
 
 # 폴리곤 ROI 마우스 이벤트 핸들러 함수, 좌푯값 저장
 def Mouse_Callback_Polygon(event, x, y, flags, params):
@@ -246,9 +347,10 @@ def detect(opt, save_img=False):
     global running
     global redrectangle_roi_pyqt, redpolygon_roi_pyqt, roi_mode_on
     global start_x, start_y, end_x, end_y, polygon_xy_list
-    global step, mouse_is_pressing
+    global distance_roi_st_x, distance_roi_st_y, distance_roi_end_x, distance_roi_end_y
+    global step, mouse_is_pressing, distance_roi_step
     global Choose_pyqt_Rect, Choose_pyqt_Polygon
-    global action_mode, distance_mode
+    global action_mode, distance_mode, roi_distance_mode, restricted_area_redrectangle_roi_pyqt
     global count_graph, fw_queue, distance_graph
 
     # pyqt start 버튼 누르면 다시 실행 될 수 있도록 True 설정
@@ -270,9 +372,10 @@ def detect(opt, save_img=False):
 
     # 배회 침입 데이터 딕셔너리
     wander = {}
-    # Fighting 유지시간 저장 리스트 & 명령모드 유지시간 저장 딕셔너리
+    # Fighting  & Falling_down 유지시간 저장 리스트 & 명령모드 유지시간 저장 딕셔너리
     fight_time = [False,0]
-    control_time = {}
+    falling_down_time = [False, 0]
+    smoking_time = {}
 
     # Initialize
     device = select_device(opt.device)
@@ -441,8 +544,32 @@ def detect(opt, save_img=False):
                         high_counting_text = "High Risk : {}".format(lh_list[1])
                         cv2.putText(im0, high_counting_text, (500, im0.shape[0] - 25), cv2.LINE_AA, 0.85, (0, 0, 255), 2)
 
+                # 제한구역에 접근하는 객체 거리 측정 후 경고 박스 생성
+                if restricted_area_redrectangle_roi_pyqt == True:
+                    cv2.namedWindow("Restricted Area ROI Settings")
+                    cv2.setMouseCallback("Restricted Area ROI Settings", Mouse_Callback_Rect_Two)
+                    im0, distance_roi_st_x, distance_roi_end_x, distance_roi_st_y, distance_roi_end_y = draw_roi_rectangle(im0, distance_roi_step, distance_roi_st_x, distance_roi_end_x, distance_roi_st_y, distance_roi_end_y)
+
+                    # 마우스 눌렀다 때면 PYQT 창에도 휘발성으로 노란색 직사각형을 그림
+                    if distance_roi_step == 3:
+                        # restricted_area_redrectangle_roi_pyqt = False # 만약 눌렀다 떈 동시에 윈도우창을 끄고 싶으면
+                        cv2.rectangle(im0, (distance_roi_st_x, distance_roi_st_y), (distance_roi_end_x, distance_roi_end_y), (0, 255, 255), 3)
+
+                    cv2.imshow("Restricted Area ROI Settings", im0)
+                    key = cv2.waitKey(1)
+
+                    # esc 누를경우, ROI 직사각형 좌표 설정 종료 및 RoI Mode 활성화
+                    if key == 27:
+                        restricted_area_redrectangle_roi_pyqt = False
+                        cv2.destroyWindow("Restricted Area ROI Settings")
+                        roi_distance_mode = True
+                        mouse_is_pressing = False
+
+                if (roi_distance_mode == True) and (restricted_area_redrectangle_roi_pyqt == False) :
+                    restricted_area_distancing(people_coords, im0, distance_roi_st_x, distance_roi_st_y, distance_roi_end_x, distance_roi_end_y)
+
                 # Pass detections to deepsort
-                im0 = deepsort.update(xywhs, confss, im0, wander, fw_queue, fight_time, control_time,action_mode, count_graph)
+                im0 = deepsort.update(xywhs, confss, im0, wander, fw_queue, fight_time, falling_down_time , smoking_time,action_mode, count_graph)
 
                 # db연결
                 conn = pymysql.connect(host="localhost", user="root", password="123456789", db="cctv_db",
@@ -506,7 +633,7 @@ def detect(opt, save_img=False):
                     # PYQT ROI 활성화 버튼을 누를시 ROI Settings 윈도우창 생성 및 직사각형 그리기
                     if redrectangle_roi_pyqt == True:
                         cv2.namedWindow("ROI Settings")
-                        cv2.setMouseCallback("ROI Settings", Mouse_Callback_Rect)
+                        cv2.setMouseCallback("ROI Settings", Mouse_Callback_Rect_One)
                         im0, start_x, end_x, start_y, end_y = draw_roi_rectangle(im0, step, start_x, end_x, start_y, end_y)
 
                         # 마우스 눌렀다 때면 PYQT 창에도 휘발성으로 노란색 직사각형을 그림
@@ -663,13 +790,25 @@ def mode_disable():
     global action_mode
     action_mode = "disable"
 
-
 def mode_distance():
     global distance_mode
     distance_mode = True
 def mode_ndistance():
     global distance_mode
     distance_mode = False
+
+def mode_restricted():
+    global restricted_area_redrectangle_roi_pyqt
+    restricted_area_redrectangle_roi_pyqt = True
+
+def mode_nrestricted():
+    global roi_distance_mode, restricted_area_redrectangle_roi_pyqt, distance_roi_step, distance_roi_st_x, distance_roi_st_y, distance_roi_end_x, distance_roi_end_y, mouse_is_pressing
+    roi_distance_mode = False
+    restricted_area_redrectangle_roi_pyqt = False
+    distance_roi_st_x, distance_roi_st_y, distance_roi_end_x, distance_roi_end_y = 0,0,0,0
+    mouse_is_pressing = False
+    distance_roi_step = 0
+    cv2.destroyWindow("Restricted Area ROI Settings")
 
 # 그래프 데이터 가져오기
 def get_data():
@@ -769,6 +908,7 @@ if __name__ == '__main__':
         vbox8 = QtWidgets.QVBoxLayout()
         vbox9 = QtWidgets.QVBoxLayout()
         vbox10 = QtWidgets.QVBoxLayout()
+        vbox11 = QtWidgets.QVBoxLayout()
 
         gbox = QtWidgets.QGroupBox()
         gbox.setTitle("Camera")
@@ -785,7 +925,9 @@ if __name__ == '__main__':
         gbox7 = QtWidgets.QGroupBox()
         gbox7.setTitle("Roaming")
         gbox8 = QtWidgets.QGroupBox()
-        gbox8.setTitle("Distancing")
+        gbox8.setTitle("Human Distancing")
+        gbox9 = QtWidgets.QGroupBox()
+        gbox9.setTitle("Restricted area")
 
         btn_start = QtWidgets.QPushButton("Camera on")
         btn_stop = QtWidgets.QPushButton("Camera off")
@@ -799,6 +941,9 @@ if __name__ == '__main__':
         btn_disable = QtWidgets.QPushButton("Disable all detections")
         btn_distance = QtWidgets.QPushButton("Distance on")
         btn_nditance = QtWidgets.QPushButton("Distance off")
+        btn_restricted = QtWidgets.QPushButton("Restricted on")
+        btn_nrestricted = QtWidgets.QPushButton("Restricted off")
+
 
         widg = QtWidgets.QTextEdit()
         widg2 = QtWidgets.QTextEdit()
@@ -819,6 +964,8 @@ if __name__ == '__main__':
         vbox9.addWidget(widg2)
         vbox10.addWidget(btn_distance)
         vbox10.addWidget(btn_nditance)
+        vbox11.addWidget(btn_restricted)
+        vbox11.addWidget(btn_nrestricted)
 
         gbox.setLayout(vbox3)
         gbox2.setLayout(vbox4)
@@ -828,12 +975,14 @@ if __name__ == '__main__':
         gbox6.setLayout(vbox8)
         gbox7.setLayout(vbox9)
         gbox8.setLayout(vbox10)
+        gbox9.setLayout(vbox11)
 
         vbox2.addWidget(gbox)
         vbox2.addWidget(gbox2)
         vbox2.addWidget(gbox3)
         vbox2.addWidget(gbox4)
         vbox2.addWidget(gbox8)
+        vbox2.addWidget(gbox9)
         vbox2.addWidget(gbox5)
 
         win.setStyleSheet(
@@ -863,6 +1012,10 @@ if __name__ == '__main__':
             "color: white;"
             "background-color: rgb(47, 42, 53)"
         )
+        gbox9.setStyleSheet(
+            "color: white;"
+            "background-color: rgb(47, 42, 53)"
+        )
 
         VideoSignal1 = QtWidgets.QLabel()
 
@@ -886,12 +1039,17 @@ if __name__ == '__main__':
         btn_distance.clicked.connect(mode_distance)
         btn_nditance.clicked.connect(mode_ndistance)
 
+        btn_restricted.clicked.connect(mode_restricted)
+        btn_nrestricted.clicked.connect(mode_nrestricted)
+
         vbox.addWidget(VideoSignal1)
         vbox.addLayout(vbox2)
 
         win.setLayout(vbox)
         win.show()
         sys.exit(app.exec_())
+
+
 
 
 

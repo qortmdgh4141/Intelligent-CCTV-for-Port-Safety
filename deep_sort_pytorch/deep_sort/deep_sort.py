@@ -56,7 +56,7 @@ class DeepSort(object):
         print('%s model is successfully loaded.' % model_name)
 
 
-    def update(self, bbox_xywh, confidences, ori_img, wander, fw_queue, fight_time, control_time, action_mode, count_graph):
+    def update(self, bbox_xywh, confidences, ori_img, wander, fw_queue, fight_time, falling_down_time, smoking_time, action_mode, count_graph):
 
         self.height, self.width = ori_img.shape[:2]
 
@@ -249,11 +249,11 @@ class DeepSort(object):
                 fw_score = 0
                 for i in range(len(fw_queue)):
                     fw_score =  fw_score + fw_queue[i]
-                if (fw_score >= 45) :
-                    if (fight_time[0] == False):
-                        fight_time.clear()
-                        fight_time.append(True)
-                        fight_time.append(round(time.time()))
+                if (fw_score >= 35) :
+                    if (falling_down_time[0] == False):
+                        falling_down_time.clear()
+                        falling_down_time.append(True)
+                        falling_down_time.append(round(time.time()))
 
                     action = 'Dangerous Action'
 
@@ -273,12 +273,12 @@ class DeepSort(object):
                     conn.commit()'''
 
                 # Dangerous 상황일 시 빨간색 박스 5초간 지속
-                elif fight_time[0] == True:
+                elif falling_down_time[0] == True:
                     tm_minus = round(time.time())-fight_time[1]
                     if tm_minus > 5:
-                        fight_time.clear()
-                        fight_time.append(False)
-                        fight_time.append(0)
+                        falling_down_time.clear()
+                        falling_down_time.append(False)
+                        falling_down_time.append(0)
                     '''else:
                         # DB 기록 Dangerous 상황, 시간 기록
                         sql = """insert into all_in_one(id, action, time)
@@ -298,19 +298,19 @@ class DeepSort(object):
             # Smoking 상황일 시 파란색 박스 3초간 지속
             elif action_mode == "smoking":
                 # 명령 모드 리스트 박스
-                control_list = ['smoke', 'chew', "eat"]
+                smoking_list = ['smoke', 'chew', "eat"]
                 # key 값은 id, Value값은 시간
                 id = int(track.track_id)
-                if action in control_list:
+                if action in smoking_list:
                     action = 'Smoking Action'
-                    control_time[id] = round(time.time())
+                    smoking_time[id] = round(time.time())
 
-                elif action not in control_list:
-                    if id in control_time:
-                        if (round(time.time()) - control_time[id]) < 3:
+                elif action not in smoking_list:
+                    if id in smoking_time:
+                        if (round(time.time()) - smoking_time[id]) < 1:
                             action = 'Smoking Action'
                         else:
-                            del (control_time[id])
+                            del (smoking_time[id])
                     else:
                         action = ''
 
