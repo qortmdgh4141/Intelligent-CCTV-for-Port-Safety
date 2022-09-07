@@ -66,8 +66,15 @@ distance_graph = []
 
 # 제한구역와 객체 간의 거리측정
 def restricted_area_distancing(people_coords, img, distance_roi_st_x, distance_roi_st_y, distance_roi_end_x, distance_roi_end_y, dist_thres_lim=(250, 10000)):
+    global distance_graph
+    distance_high_count = 0
+    distance_low_count = 0
+
     # restricted_area roi 영역 그리기
-    cv2.rectangle(img, (distance_roi_st_x, distance_roi_st_y), (distance_roi_end_x, distance_roi_end_y), (0, 0, 255), 3)
+    ROI_box = img[distance_roi_st_y: distance_roi_end_y, distance_roi_st_x: distance_roi_end_x]
+    ROI_box = cv2.add(ROI_box, (200, 200, 200, 0))
+    img[distance_roi_st_y: distance_roi_end_y, distance_roi_st_x: distance_roi_end_x] = ROI_box
+    cv2.rectangle(img, (distance_roi_st_x, distance_roi_st_y), (distance_roi_end_x, distance_roi_end_y), (255, 255, 255), 3)
 
     a = torch.tensor(distance_roi_st_x, device="cuda:0")
     b = torch.tensor(distance_roi_st_y, device="cuda:0")
@@ -108,12 +115,7 @@ def restricted_area_distancing(people_coords, img, distance_roi_st_x, distance_r
         if dist > dist_thres_lim[0] and dist < dist_thres_lim[1]:
             color = (0, 255, 255)
             label = "Low Risk "
-            cv2.line(img, cntr1, cntr2, color, thickness)
-            if already_red[cntr1] == 0:
-                cv2.circle(img, cntr1, radius, color, -1)
-            if already_red[cntr2] == 0:
-                cv2.circle(img, cntr2, radius, color, -1)
-            # Plots one bounding box on image img
+            cv2.rectangle(img, (int(xyxy1[0]), int(xyxy1[1])), (int(xyxy1[2]), int(xyxy1[3])), color, 3)
             tl = round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
             for xy in x:
                 cntr = ((int(xy[2]) + int(xy[0])) // 2, (int(xy[3]) + int(xy[1])) // 2)
@@ -123,14 +125,15 @@ def restricted_area_distancing(people_coords, img, distance_roi_st_x, distance_r
                     t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
                     c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
 
+            distance_low_count += 1
+
         elif dist < dist_thres_lim[0]:
             color = (0, 0, 255)
             label = "High Risk"
             already_red[cntr1] = 1
             already_red[cntr2] = 1
-            cv2.line(img, cntr1, cntr2, color, thickness)
-            cv2.circle(img, cntr1, radius, color, -1)
-            cv2.circle(img, cntr2, radius, color, -1)
+            cv2.rectangle(img, (int(xyxy1[0]), int(xyxy1[1])), (int(xyxy1[2]), int(xyxy1[3])), color, 3)
+
             # Plots one bounding box on image img
             tl = round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
             for xy in x:
@@ -138,6 +141,14 @@ def restricted_area_distancing(people_coords, img, distance_roi_st_x, distance_r
                 tf = max(tl - 1, 1)  # font thickness
                 t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
                 c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+
+            distance_high_count += 1
+
+        distance_graph.append(distance_low_count)
+        distance_graph.append(distance_high_count)
+
+    return [distance_low_count, distance_high_count]
+
 
 # 객체별 거리측정
 def distancing(people_coords, img, dist_thres_lim=(250, 550)):
@@ -387,6 +398,9 @@ def detect(opt, save_img=False):
     # Load model
     model = torch.load(weights, map_location=device)[
         'model'].float()  # load to FP32
+
+
+
     model.to(device).eval()
     if half:
         model.half()  # to FP16
@@ -478,9 +492,11 @@ def detect(opt, save_img=False):
         pred = model(img, augment=opt.augment)[0]
 
         # Apply NMS
+
         pred = non_max_suppression(
             pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
         t2 = time_synchronized()
+
 
         # distance 함수 인자에 사용할 리스트, 감지된 박스 좌표 저장
         people_coords = []
@@ -523,8 +539,15 @@ def detect(opt, save_img=False):
 
                 # Adapt detections to deep sort input format
                 for *xyxy, conf, cls in det:
+
+                  # 호호 사람만 deepsort 진행
+                  if names[int(cls)] == 'person' :
                     x_c, y_c, bbox_w, bbox_h = bbox_rel(*xyxy)
                     obj = [x_c, y_c, bbox_w, bbox_h]
+
+
+                    # 호호 조끼, 사람, 헬멧 출력
+                    #cv2.putText(im0, names[int(cls)], (int(x_c), int(y_c) - 20), cv2.FONT_HERSHEY_PLAIN, 10, [0, 0, 0], 2)
 
                     bbox_xywh.append(obj)
                     confs.append([conf.item()])
@@ -571,6 +594,7 @@ def detect(opt, save_img=False):
                 # Pass detections to deepsort
                 im0 = deepsort.update(xywhs, confss, im0, wander, fw_queue, fight_time, falling_down_time , smoking_time,action_mode, count_graph)
 
+
                 # db연결
                 conn = pymysql.connect(host="localhost", user="root", password="123456789", db="cctv_db",
                                        charset="utf8")
@@ -590,10 +614,11 @@ def detect(opt, save_img=False):
                 # x % 5 ==0 일경우
 
                 # 위젯에 출력
-                # db박스 초기화 후 데이터 마다 색상 변경
-                widg.clear()
-                widg2.clear()
 
+                # db박스 초기화 후 데이터 마다 색상 변경
+                '''widg.clear()
+                widg2.clear()
+                
                 for i in range(0, len(rows)):
                     if (str(rows[i][1]) == 'danger'):
                         widg.setTextColor(QColor(255, 51, 0))
@@ -607,7 +632,7 @@ def detect(opt, save_img=False):
                         widg2.append(str(rows2[i]))
                     else:
                         widg2.setTextColor(QColor(0, 255, 0))
-                        widg2.append(str(rows2[i]))
+                        widg2.append(str(rows2[i]))'''
 
             else:
                 deepsort.increment_ages()
@@ -840,14 +865,14 @@ def get_data():
     count_graph.clear()
 
 #  웹캠 또는 영상으로 지정하는 변수 파이큐티 사용 하기위해
-device = '0'
-#device = 'inference/test1.mp4'
+#device = '0'
+device = 'inference/aa.mp4'
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str,
-                        default='yolov5/weights/yolov5s.pt', help='model.pt path')
+                        default='yolov5/weights/ppe_yolo_n.pt', help='model.pt path')
     # file/folder, 0 for webcam
     parser.add_argument('--source', type=str,
                         default=device, help='source')
@@ -869,7 +894,7 @@ if __name__ == '__main__':
                         help='save results to *.txt')
     # class 0 is person
     parser.add_argument('--classes', nargs='+', type=int,
-                        default=[0], help='filter by class')
+                        help='filter by class')
     parser.add_argument('--agnostic-nms', action='store_true',
                         help='class-agnostic NMS')
     parser.add_argument('--augment', action='store_true',
@@ -902,13 +927,14 @@ if __name__ == '__main__':
         vbox2 = QtWidgets.QVBoxLayout()
         vbox3 = QtWidgets.QVBoxLayout()
         vbox4 = QtWidgets.QVBoxLayout()
-        vbox5 = QtWidgets.QVBoxLayout()
+        vbox5 = QtWidgets.QHBoxLayout()
         vbox6 = QtWidgets.QVBoxLayout()
         vbox7 = QtWidgets.QHBoxLayout()
         vbox8 = QtWidgets.QVBoxLayout()
         vbox9 = QtWidgets.QVBoxLayout()
         vbox10 = QtWidgets.QVBoxLayout()
         vbox11 = QtWidgets.QVBoxLayout()
+        vbox12 = QtWidgets.QVBoxLayout()
 
         gbox = QtWidgets.QGroupBox()
         gbox.setTitle("Camera")
@@ -928,6 +954,10 @@ if __name__ == '__main__':
         gbox8.setTitle("Human Distancing")
         gbox9 = QtWidgets.QGroupBox()
         gbox9.setTitle("Restricted area")
+        gbox10 = QtWidgets.QGroupBox()
+        gbox10.setTitle("Distance Detect")
+
+
 
         btn_start = QtWidgets.QPushButton("Camera on")
         btn_stop = QtWidgets.QPushButton("Camera off")
@@ -948,6 +978,8 @@ if __name__ == '__main__':
         widg = QtWidgets.QTextEdit()
         widg2 = QtWidgets.QTextEdit()
 
+
+
         vbox3.addWidget(btn_start)
         vbox3.addWidget(btn_stop)
         vbox4.addWidget(btn_roi_on)
@@ -958,8 +990,10 @@ if __name__ == '__main__':
         vbox6.addWidget(btn_falling_down)
         vbox6.addWidget(btn_smoking)
         vbox6.addWidget(btn_disable)
+
         vbox7.addWidget(gbox6)
         vbox7.addWidget(gbox7)
+
         vbox8.addWidget(widg)
         vbox9.addWidget(widg2)
         vbox10.addWidget(btn_distance)
@@ -967,22 +1001,36 @@ if __name__ == '__main__':
         vbox11.addWidget(btn_restricted)
         vbox11.addWidget(btn_nrestricted)
 
+        vbox12.addWidget(gbox8)
+        vbox12.addWidget(gbox9)
+
+
+
+
+
         gbox.setLayout(vbox3)
         gbox2.setLayout(vbox4)
         gbox3.setLayout(vbox5)
         gbox4.setLayout(vbox6)
         gbox5.setLayout(vbox7)
+
         gbox6.setLayout(vbox8)
         gbox7.setLayout(vbox9)
+
         gbox8.setLayout(vbox10)
         gbox9.setLayout(vbox11)
+
+        gbox10.setLayout(vbox12)
+
+
 
         vbox2.addWidget(gbox)
         vbox2.addWidget(gbox2)
         vbox2.addWidget(gbox3)
         vbox2.addWidget(gbox4)
-        vbox2.addWidget(gbox8)
-        vbox2.addWidget(gbox9)
+        #vbox2.addWidget(gbox8)
+        #vbox2.addWidget(gbox9)
+        vbox2.addWidget(gbox10)
         vbox2.addWidget(gbox5)
 
         win.setStyleSheet(
@@ -1016,6 +1064,11 @@ if __name__ == '__main__':
             "color: white;"
             "background-color: rgb(47, 42, 53)"
         )
+        gbox10.setStyleSheet(
+            "color: white;"
+            "background-color: rgb(47, 42, 53)"
+        )
+
 
         VideoSignal1 = QtWidgets.QLabel()
 

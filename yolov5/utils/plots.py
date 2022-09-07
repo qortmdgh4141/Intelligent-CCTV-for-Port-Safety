@@ -1,5 +1,6 @@
 # Plotting utils
 
+
 import glob
 import os
 import random
@@ -16,8 +17,8 @@ import yaml
 from PIL import Image, ImageDraw
 from scipy.signal import butter, filtfilt
 
-from utils.general import xywh2xyxy, xyxy2xywh
-from utils.metrics import fitness
+from yolov5.utils.general import xywh2xyxy, xyxy2xywh
+from yolov5.utils.metrics import fitness
 
 # Settings
 matplotlib.rc('font', **{'size': 11})

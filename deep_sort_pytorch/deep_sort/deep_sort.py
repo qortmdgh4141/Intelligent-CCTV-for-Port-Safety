@@ -11,9 +11,11 @@ from gluoncv.model_zoo import get_model
 import mxnet as mx
 import pymysql
 
+import argparse
 
 __all__ = ['DeepSort']
 palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
+
 
 
 class DeepSort(object):
@@ -37,7 +39,6 @@ class DeepSort(object):
         self.tracker = Tracker(
             metric, max_iou_distance=max_iou_distance, max_age=max_age, n_init=n_init)
 
-
         # Fighting Mode 모델
         model_name = 'i3d_resnet50_v1_sthsthv2'
         self.net = get_model(model_name, pretrained=True)
@@ -47,6 +48,10 @@ class DeepSort(object):
 
         # 명령 Mode 모델
         model_name2 = 'i3d_resnet50_v1_hmdb51'
+        self.net2 = get_model(model_name2, pretrained=True)
+        with mx.Context('gpu', 0):  # Context changed in `with` block.
+            self.net2.collect_params().reset_ctx(ctx=mx.current_context())
+
         self.net2 = get_model(model_name2, pretrained=True)
         with mx.Context('gpu', 0):  # Context changed in `with` block.
             self.net2.collect_params().reset_ctx(ctx=mx.current_context())
