@@ -1,5 +1,5 @@
 # Intelligent_CCTV_Module_for_Port_Safety📷
-(The project is still in progress... (planned to be completed around November))
+⚠️ The project is still in progress... --> planned to be completed around November
 #### Motivation for development 👋
 
 This study proposes an intelligent CCTV, Smart Eye, to help managers respond quickly and accurately to dangerous situations after real-time detection of accidents and abnormal behaviors that occur in violation of safety rules at ports. 
