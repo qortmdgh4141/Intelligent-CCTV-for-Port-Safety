@@ -15,7 +15,6 @@ class TrackState:
     are classified as `deleted` to mark them for removal from the set of active
     tracks.
     """
-
     Tentative = 1
     Confirmed = 2
     Deleted = 3
@@ -67,7 +66,6 @@ class Track:
         vector is added to this list.
     """
 
-
     def __init__(self, mean, covariance, track_id, n_init, max_age,
                  feature=None):
         self.mean = mean
@@ -92,7 +90,6 @@ class Track:
         self.frames = deque(maxlen=self.SAMPLE_DURATION)
         self.action = None
 
-
     def update_frames(self, bbox, image):
         # crop image with bbox roi
         # bbox format xmin, ymin, xmax, ymax
@@ -100,8 +97,7 @@ class Track:
         frame = cv2.resize(frame, (224, 224))
         self.frames.append(frame)
 
-
-    def get_action(self, net, action_mode="fight", track_id="No_Id"):
+    def get_action(self, net, action_mode="fight", track_id="No_Id", Choose_pyqt_pc=False):
         if len(self.frames) < self.SAMPLE_DURATION:
             return None
 
@@ -120,7 +116,6 @@ class Track:
 
         # Fighting Mode 일시 16으로 설정(명령 Mode 일시 32으로 설정)
         clip_input = clip_input.reshape((-1,) + (16, 3, 224, 224))
-
         clip_input = np.transpose(clip_input, (0, 2, 1, 3, 4))
 
         # pred는 2차원배열이며, type이 ndarry : <class 'mxnet.ndarray.ndarray.NDArray'>
@@ -138,44 +133,40 @@ class Track:
                   (classes[ind[i].asscalar()], nd.softmax(pred)[0][ind[i]].asscalar()))
         print("-----------------------------------------------------------------------------------------")
 
-        # num = ind[0].asscalar()
-
         f1_list = ["Hitting"] #f_list = ["Hitting", "Wiping", "Spinning", "Throwing", "Pulling", "Putting"] # f_list = ["Hitting", "Throwing"]
         f2_list = ['Get down', 'situp'] # f2_list = ['hand on head', 'Get down', situp]
         f3_list = ['smoke', 'chew', "eat"]
-
 
         if action_mode == "fight":
             for i in range(topK):
                 if classes[ind[i].asscalar()] in f1_list:
                     if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.4:
-                        # 2초마다 데이터베이스에 입력
-                        sql = """insert into all_in_one(id, action, time)
-                                                             values(%s, %s, now())"""
-                        sql2 = """select distinct id, action from all_in_one"""
+                        if Choose_pyqt_pc == True :
+                            # 2초마다 데이터베이스에 입력
+                            sql = """insert into all_in_one(id, action, time)
+                                                                 values(%s, %s, now())"""
+                            sql2 = """select distinct id, action from all_in_one"""
 
-                        curs2.execute(sql2)
-                        rows = curs2.fetchall()
-                        a = []
-                        for i in range(len(rows)):
-                            a.append(rows[i])
-                        if (str(track_id), 'warning') not in a:
-                            curs.execute(sql, (track_id, 'warning'))
-                        conn.commit()
+                            curs2.execute(sql2)
+                            rows = curs2.fetchall()
+                            a = []
+                            for i in range(len(rows)):
+                                a.append(rows[i])
+                            if (str(track_id), 'warning') not in a:
+                                curs.execute(sql, (track_id, 'warning'))
+                            conn.commit()
                         return "Warning Action"
-
 
         elif action_mode == "falling_down":
             for i in range(topK):
-                if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.2:
+                if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.1:
                     if classes[ind[i].asscalar()] in f2_list:
                         return "Warning Action"
                         #return classes[ind[i].asscalar()]
 
-
         elif action_mode == "smoking":
             for i in range(topK):
-                if nd.softmax(pred)[0][ind[i]].asscalar() >= 0.2:
+                #if nd.softmax(pred)[0][ind[i]].asscalar():
                     if classes[ind[i].asscalar()] in f3_list:
                         return classes[ind[i].asscalar()]
 
@@ -195,7 +186,6 @@ class Track:
 
         return ret
 
-
     def to_tlbr(self):
         """Get current position in bounding box format `(min x, miny, max x,
         max y)`.
@@ -211,11 +201,9 @@ class Track:
 
         return ret
 
-
     def increment_age(self):
         self.age += 1
         self.time_since_update += 1
-
 
     def predict(self, kf):
         """Propagate the state distribution to the current time step using a
@@ -229,7 +217,6 @@ class Track:
         """
         self.mean, self.covariance = kf.predict(self.mean, self.covariance)
         self.increment_age()
-
 
     def update(self, kf, detection):
         """Perform Kalman filter measurement update step and update the feature
@@ -252,7 +239,6 @@ class Track:
         if self.state == TrackState.Tentative and self.hits >= self._n_init:
             self.state = TrackState.Confirmed
 
-
     def mark_missed(self):
         """Mark this track as missed (no association at the current time step).
         """
@@ -261,17 +247,14 @@ class Track:
         elif self.time_since_update > self._max_age:
             self.state = TrackState.Deleted
 
-
     def is_tentative(self):
         """Returns True if this track is tentative (unconfirmed).
         """
         return self.state == TrackState.Tentative
 
-
     def is_confirmed(self):
         """Returns True if this track is confirmed."""
         return self.state == TrackState.Confirmed
-
 
     def is_deleted(self):
         """Returns True if this track is dead and should be deleted."""

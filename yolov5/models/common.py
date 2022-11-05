@@ -26,7 +26,6 @@ def DWConv(c1, c2, k=1, s=1, act=True):
     # Depthwise convolution
     return Conv(c1, c2, k, s, g=math.gcd(c1, c2), act=act)
 
-
 class Conv(nn.Module):
     # Standard convolution
     def __init__(self, c1, c2, k=1, s=1, p=None, g=1, act=True):  # ch_in, ch_out, kernel, stride, padding, groups
@@ -34,6 +33,7 @@ class Conv(nn.Module):
         self.conv = nn.Conv2d(c1, c2, k, s, autopad(k, p), groups=g, bias=False)
         self.bn = nn.BatchNorm2d(c2)
         self.act = nn.Hardswish() if act else nn.Identity()
+
 
     def forward(self, x):
         return self.act(self.bn(self.conv(x)))
@@ -57,6 +57,7 @@ class SPPF(nn.Module):
             y1 = self.m(x)
             y2 = self.m(y1)
             return self.cv2(torch.cat((x, y1, y2, self.m(y2)), 1))
+
 
 class C3(nn.Module):
     # CSP Bottleneck with 3 convolutions

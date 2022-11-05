@@ -55,16 +55,16 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
     results_file = save_dir / 'results.txt'
 
     # Save run settings
-    with open(save_dir / 'hyp.yaml', 'w') as f:
+    with open(save_dir / 'hyp.yaml', 'w', encoding="utf-8") as f:
         yaml.dump(hyp, f, sort_keys=False)
-    with open(save_dir / 'opt.yaml', 'w') as f:
+    with open(save_dir / 'opt.yaml', 'w', encoding="utf-8") as f:
         yaml.dump(vars(opt), f, sort_keys=False)
 
     # Configure
     plots = not opt.evolve  # create plots
     cuda = device.type != 'cpu'
     init_seeds(2 + rank)
-    with open(opt.data) as f:
+    with open(opt.data, encoding="utf-8") as f:
         data_dict = yaml.load(f, Loader=yaml.FullLoader)  # data dict
     with torch_distributed_zero_first(rank):
         check_dataset(data_dict)  # check
@@ -91,7 +91,8 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
         model = Model(opt.cfg, ch=3, nc=nc).to(device)  # create
 
     # Freeze
-    freeze = []  # parameter names to freeze (full or partial)
+    #freeze = []  # parameter names to freeze (full or partial)
+    freeze = ['model.%s.' % x for x in range(10)]
     for k, v in model.named_parameters():
         v.requires_grad = True  # train all layers
         if any(x in k for x in freeze):
@@ -134,7 +135,8 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
         wandb_run = wandb.init(config=opt, resume="allow",
                                project='YOLOv5' if opt.project == 'runs/train' else Path(opt.project).stem,
                                name=save_dir.stem,
-                               id=ckpt.get('wandb_id') if 'ckpt' in locals() else None)
+                               id = ckpt.get('wandb_id') if 'ckpt' in locals() and opt.resume else None)
+                               #id=ckpt.get('wandb_id') if 'ckpt' in locals() else None)
     loggers = {'wandb': wandb}  # loggers dict
 
     # Resume
@@ -147,7 +149,7 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
 
         # Results
         if ckpt.get('training_results') is not None:
-            with open(results_file, 'w') as file:
+            with open(results_file, 'w', encoding="utf-8") as file:
                 file.write(ckpt['training_results'])  # write results.txt
 
         # Epochs
@@ -343,7 +345,7 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
                                                  log_imgs=opt.log_imgs if wandb else 0)
 
             # Write
-            with open(results_file, 'a') as f:
+            with open(results_file, 'a', encoding="utf-8") as f:
                 f.write(s + '%10.4g' * 7 % results + '\n')  # P, R, mAP@.5, mAP@.5-.95, val_loss(box, obj, cls)
             if len(opt.name) and opt.bucket:
                 os.system('gsutil cp %s gs://%s/results/results%s.txt' % (results_file, opt.bucket, opt.name))
@@ -367,7 +369,7 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
             # Save model
             save = (not opt.nosave) or (final_epoch and not opt.evolve)
             if save:
-                with open(results_file, 'r') as f:  # create checkpoint
+                with open(results_file, 'r', encoding="utf-8") as f:  # create checkpoint
                     ckpt = {'epoch': epoch,
                             'best_fitness': best_fitness,
                             'training_results': f.read(),
@@ -411,15 +413,15 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', type=str, default='yolov5s.pt', help='initial weights path')
-    parser.add_argument('--cfg', type=str, default='', help='model.yaml path')
-    parser.add_argument('--data', type=str, default='data/coco128.yaml', help='data.yaml path')
+    parser.add_argument('--weights', type=str, default='weights/yolov5s.pt', help='initial weights path')
+    parser.add_argument('--cfg', type=str, default='models/yolov5s.yaml', help='model.yaml path')
+    parser.add_argument('--data', type=str, default='data/dog_dataset.yaml', help='data.yaml path')
     parser.add_argument('--hyp', type=str, default='data/hyp.scratch.yaml', help='hyperparameters path')
     parser.add_argument('--epochs', type=int, default=300)
-    parser.add_argument('--batch-size', type=int, default=16, help='total batch size for all GPUs')
-    parser.add_argument('--img-size', nargs='+', type=int, default=[640, 640], help='[train, test] image sizes')
+    parser.add_argument('--batch-size', type=int, default=64, help='total batch size for all GPUs')
+    parser.add_argument('--img-size', nargs='+', type=int, default=[320, 320], help='[train, test] image sizes')
     parser.add_argument('--rect', action='store_true', help='rectangular training')
-    parser.add_argument('--resume', nargs='?', const=True, default=False, help='resume most recent training')
+    parser.add_argument('--resume', nargs='?', const=True, default=True, help='resume most recent training')
     parser.add_argument('--nosave', action='store_true', help='only save final checkpoint')
     parser.add_argument('--notest', action='store_true', help='only test final epoch')
     parser.add_argument('--noautoanchor', action='store_true', help='disable autoanchor check')
@@ -427,17 +429,17 @@ if __name__ == '__main__':
     parser.add_argument('--bucket', type=str, default='', help='gsutil bucket')
     parser.add_argument('--cache-images', action='store_true', help='cache images for faster training')
     parser.add_argument('--image-weights', action='store_true', help='use weighted image selection for training')
-    parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+    parser.add_argument('--device', default='0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--multi-scale', action='store_true', help='vary img-size +/- 50%%')
     parser.add_argument('--single-cls', action='store_true', help='train as single-class dataset')
     parser.add_argument('--adam', action='store_true', help='use torch.optim.Adam() optimizer')
     parser.add_argument('--sync-bn', action='store_true', help='use SyncBatchNorm, only available in DDP mode')
     parser.add_argument('--local_rank', type=int, default=-1, help='DDP parameter, do not modify')
     parser.add_argument('--log-imgs', type=int, default=16, help='number of images for W&B logging, max 100')
-    parser.add_argument('--workers', type=int, default=8, help='maximum number of dataloader workers')
+    parser.add_argument('--workers', type=int, default=4, help='maximum number of dataloader workers')
     parser.add_argument('--project', default='runs/train', help='save to project/name')
-    parser.add_argument('--name', default='exp', help='save to project/name')
-    parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
+    parser.add_argument('--name', default='train_img_result_freezing_batch64', help='save to project/name')
+    parser.add_argument('--exist-ok', action='store_true', default=False, help='existing project/name ok, do not increment')
     opt = parser.parse_args()
 
     # Set DDP variables
@@ -452,7 +454,7 @@ if __name__ == '__main__':
     if opt.resume:  # resume an interrupted run
         ckpt = opt.resume if isinstance(opt.resume, str) else get_latest_run()  # specified or most recent path
         assert os.path.isfile(ckpt), 'ERROR: --resume checkpoint does not exist'
-        with open(Path(ckpt).parent.parent / 'opt.yaml') as f:
+        with open(Path(ckpt).parent.parent / 'opt.yaml', encoding="utf-8") as f:
             opt = argparse.Namespace(**yaml.load(f, Loader=yaml.FullLoader))  # replace
         opt.cfg, opt.weights, opt.resume = '', ckpt, True
         logger.info('Resuming training from %s' % ckpt)
@@ -475,7 +477,7 @@ if __name__ == '__main__':
         opt.batch_size = opt.total_batch_size // opt.world_size
 
     # Hyperparameters
-    with open(opt.hyp) as f:
+    with open(opt.hyp, encoding="utf-8") as f:
         hyp = yaml.load(f, Loader=yaml.FullLoader)  # load hyps
         if 'box' not in hyp:
             warn('Compatibility: %s missing "box" which was renamed from "giou" in %s' %

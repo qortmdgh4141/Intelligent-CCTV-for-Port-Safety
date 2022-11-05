@@ -15,31 +15,29 @@ class TimeAxisItem(pg.AxisItem):
         """
         return [time.strftime("%H:%M:%S", time.localtime(local_time)) for local_time in values]
 
-
 class Realime_graph(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.pw1 = pg.PlotWidget(
-            title="The number of people",
-            labels={'left': 'People-Counting'},
+            title="Number of people",
+            labels={'left': 'People-Number-Score'},
             axisItems={'bottom': TimeAxisItem(orientation='bottom')}
         )
-
-        self.pw1.setTitle("The number of people", **{'color': 'w', 'size': '14pt'})
+        self.pw1.setTitle("Number Of People Status", **{'color': 'w', 'size': '14pt'})
 
         self.pw2 = pg.PlotWidget(
-            title="The risk by distance",
+            title="Risk by distance",
             labels={'left': 'Distance-Risk-Score'},
             axisItems={'bottom': TimeAxisItem(orientation='bottom')}
         )
-        self.pw2.setTitle("The risk by distance", **{'color': 'w', 'size': '14pt'})
+        self.pw2.setTitle("Distance-Based Risk Status", **{'color': 'w', 'size': '14pt'})
 
         self.pw3 = pg.PlotWidget(
-            title="The dangers of fighting action",
-            labels={'left': 'Fight-Dangerous-score'},
+            title="The dangers of action",
+            labels={'left': 'Action-Risk-Score'},
             axisItems={'bottom': TimeAxisItem(orientation='bottom')}
         )
-        self.pw3.setTitle("The dangers of fighting action", **{'color': 'w', 'size': '14pt'})
+        self.pw3.setTitle("Action-Based Risk Status", **{'color': 'w', 'size': '14pt'})
 
         vbox1 = QVBoxLayout()
         hbox1 = QHBoxLayout()
