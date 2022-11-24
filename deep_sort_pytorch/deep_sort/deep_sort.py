@@ -285,7 +285,7 @@ class DeepSort(object):
             # Smoking 상황일 시 파란색 박스 3초간 지속
             elif action_mode == "smoking":
                 # 명령 모드 리스트 박스
-                smoking_list = ['smoke', 'chew', "eat","shoot_gun","drink"]
+                smoking_list = ['smoke', 'chew', "eat","shoot_gun","drink","kiss","sit"]
                 # key 값은 id, Value값은 시간
                 id = int(track.track_id)
 
