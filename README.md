@@ -38,7 +38,7 @@ This system is expected to contribute to the introduction of a smart port system
 </p>
 
 ### 💾 Datasets used in the project
-- _**COCO Dataset**_
-- _**Color Helmet and Vest Dataset**_
-- _**HMDB51 Dataset**_
-- _**Something-Something-V2 Dataset**_
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; COCO Dataset <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Color Helmet and Vest Dataset <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HMDB51 Dataset <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Something-Something-V2 Dataset <br/>
