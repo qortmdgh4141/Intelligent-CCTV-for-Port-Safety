@@ -1,15 +1,36 @@
-# Intelligent_CCTV_Module_for_Port_Safety📷
-⚠️ The project is still in progress... --> planned to be completed around November
-#### Motivation for development 👋
+## 📹 Intelligent CCTV for Port Safety
+- _The PDF file is a paper of Intelligent CCTV for Port Safety published by KIPS(Korean Information Processing Society)._ <br/> <br/> <br/> 
 
-This study proposes an intelligent CCTV, Smart Eye, to help managers respond quickly and accurately to dangerous situations after real-time detection of accidents and abnormal behaviors that occur in violation of safety rules at ports. 
+### 1. &nbsp; Background of Development <br/> 
+- _Recently, CCTV-related technologies have been used in various ways in our daily lives, such as security and safety accident prevention. However, traditional CCTV cameras record more unnecessary information than is needed when a problem occurs. In addition, it is difficult to fully recognize and judge the field situation only with existing CCTV cameras. The Korea Safety and Health Agency announced that six deaths occurred every year at domestic ports during 2011-2021. It shows the limitations that existing CCTV cameras cannot solve safety accidents and human casualties in domestic ports. In order to solve these limitations, I devised "Intelligent CCTV for Port Safety" that can quickly and accurately respond to dangerous situations while checking the site situation in real time._ <br/><br/><br/>
 
-Smart Eye uses Computer Vision-based various Object Detection and Action Recognition models to determine compliance with safety rules and abnormal behavior, implement Object Tracking, Region of Interest (ROI), and distance measurement algorithms between objects to measure intrusion, roaming, and contact accident risk. 
+### 2. &nbsp; Project Introduction <br/> 
 
-The automated 24-hour monitoring system can establish an "intelligent infrastructure" that enables efficient management/operation by quickly delivering data collected at each location to managers and grafting it to an integrated control center in the port after real-time video data analysis and judgment processing. 
+- _The project used a variety of Object Detection and Action Recognition Models based on traditional Computer Vision technique and Deep Neural Network._ <br/><br/>
 
-This system is expected to contribute to the introduction of a smart port system and the creation of a smart city soon.
+- _Based on these deep learning models, the following algorithms are implemented:_ <br/>
 
+  - _Object Tracking_
+  - _Region of Interest (ROI)_
+  - _Time Series Data Analysis_
+  - _Measuring Distance Between Objects_ <br/><br/>
+  
+- _Through the algorithm mentioned above, the following events are determined and analyzed::_ <br/>
+
+  - _Intrusion and Loitering_
+  - _Risk of Access to Restricted Areas_
+  - _Risk of Collision Between Workers_
+  - _Risk of Not Wearing Operator Safety Equipmen_
+  - _Fire Accident_
+  - _Act of Violence_
+  - _Act of Falling_
+  - _Act of Smoking_ <br/><br/>
+
+- _The analyzed information is stored in the database, and the administrator can quickly grasp the field situation through text and graph-type information provided in real time._ <br/>
+
+  - _Field situation information can be checked not only on PC but also on smartphones._ <br/><br/><br/>
+  
+### 3. &nbsp; Main Function <br/> <br/> 
 
 --------------------------
 ### 💻 S/W Development Environment
