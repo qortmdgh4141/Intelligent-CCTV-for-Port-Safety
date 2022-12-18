@@ -28,7 +28,7 @@
 
 - _The analyzed information is stored in the database, and the administrator can quickly grasp the field situation through text and graph-type information provided in real time._ <br/>
 
-  - _Field situation information can be checked not only on PC but also on smartphones._ <br/><br/><br/>
+  - _Field situation information can be checked not only on PC but also on smartphone._ <br/><br/><br/>
   
 ### 3. &nbsp; Main Function <br/> <br/> 
 
