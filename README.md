@@ -11,31 +11,34 @@ The automated 24-hour monitoring system can establish an "intelligent infrastruc
 This system is expected to contribute to the introduction of a smart port system and the creation of a smart city soon.
 
 
-### 💪 Skills
-#### Platforms & Languages & Tools
+--------------------------
+### 💻 S/W Development Environment
 <p>
-
-  <img src="https://img.shields.io/badge/PyCharm-66FF00?style=flat-square&logo=PyCharm&logoColor=black"/>
-  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=Python&logoColor=white"/>
-  <img src="https://img.shields.io/badge/PyTorch-FF9900?style=flat-square&logo=PyTorch&logoColor=EE4C2C"/>
-  <img src="https://img.shields.io/badge/Numpy-013243?style=flat-square&logo=Numpy&logoColor=blue"/>
+  <img src="https://img.shields.io/badge/Windows 10-0078D6?style=flat-square&logo=Windows&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Visual Studio-5C2D91?style=flat-square&logo=Visual studio&logoColor=white"/> 
+  <img src="https://img.shields.io/badge/CMake-A0A0A0?style=flat-square&logo=CMake&logoColor=064F8C"/>
 </p>  
 <p>
-  <img src="https://img.shields.io/badge/PHP-222222?style=flat-square&logo=PHP&logoColor=777BB4"/>
-  <img src="https://img.shields.io/badge/MySQL-eeeeee?style=flat-square&logo=MySQL&logoColor=4479A1"/>
-  <img src="https://img.shields.io/badge/Apache-A81C7D?style=flat-square&logo=Apache&logoColor=D22128"/>
-  <img src="https://img.shields.io/badge/Apache Tomcat-999999?style=flat-square&logo=Apache Tomcat&logoColor=F8DC75"/>
+  <img src="https://img.shields.io/badge/PyCharm-66FF00?style=flat-square&logo=PyCharm&logoColor=black"/>
+  <img src="https://img.shields.io/badge/NVIDIA-black?style=flat-square&logo=NVIDIA&logoColor=76B900"/>
+  <img src="https://img.shields.io/badge/MySQL-00CCCC?style=flat-square&logo=MySQL&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Firebase-blue?style=flat-square&logo=Firebase&logoColor=FFCA28"/>
 </p>
 <p>
-  <img src="https://img.shields.io/badge/Android-3DDC84?style=flat-square&logo=Android&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Java-FF0000?style=flat-square&logo=Java&logoColor=white"/>
-  <img src="https://img.shields.io/badge/XML-888888?style=flat-square&logo=Java&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Anaconda-e9e9e9?style=flat-square&logo=Anaconda&logoColor=44A833"/>
+  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=Python&logoColor=white"/>
+  <img src="https://img.shields.io/badge/PyTorch-FF9900?style=flat-square&logo=PyTorch&logoColor=EE4C2C"/>
+  <img src="https://img.shields.io/badge/NumPy-013243?style=flat-square&logo=Numpy&logoColor=blue"/>
 </p>   
- 
 
-#### Deep Learning Model
+### 🚀 Deep Learning Model
 <p>
   <img src="https://img.shields.io/badge/YOLO-black?&logo=YOLO&logoColor=00FFFF"/>
-  <img src="https://img.shields.io/badge/Inflated 3D ConvNet-blue?"/>
-  <img src="https://img.shields.io/badge/SlowFast-6633ff?"/>
+  <img src="https://img.shields.io/badge/I3D-FF3399?"/>
 </p>
+
+### 💾 Datasets used in the project
+- _**COCO Dataset**_
+- _**Color Helmet and Vest Dataset**_
+- _**HMDB51 Dataset**_
+- _**Something-Something-V2 Dataset**_
