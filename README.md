@@ -20,7 +20,7 @@
   - _Intrusion and Loitering_
   - _Risk of Access to Restricted Areas_
   - _Risk of Collision Between Workers_
-  - _Risk of Not Wearing Operator Safety Equipmen_
+  - _Risk of Not Wearing Operator Safety Equipment_
   - _Fire Accident_
   - _Act of Violence_
   - _Act of Falling_
