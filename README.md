@@ -7,7 +7,7 @@
 ### 2. &nbsp; Project Introduction <br/> 
 
 - _The project used a variety of object detection and action recognition models based on traditional computer vision technique and deep neural network._ <br/><br/>
-- 
+
 - _Based on the various deep learning models mentioned above, the following algorithms are implemented :_ <br/>
 
   - _Object Tracking_
@@ -34,16 +34,19 @@
   
 ### 3. &nbsp; Main Function <br/><br/>
 - _**Region of Interest (ROI)**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/region_of_interest.png?raw=true"  width="640" height="340"> <br/><br/>
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/region_of_interest_(roi).png?raw=true"  width="1280" height="340"> <br/>
+
   - _Regions of interest (ROI) means the meaningful and important regions in the images._ <br/>
     - _ROI function eliminates unnecessary areas from the image, improving the processing speed and accuracy of object detection and action recognition._ <br/>
     - _The ROI function is implemented based on the binary mask technique in the image processing field._ <br/>
-    - _In the mask image, pixels that belong to the ROI are set to 1 and pixels outside the ROI are set to 0._ <br/> <br/>
+    - _In the mask image, pixels that belong to the ROI are set to 1 and pixels outside the ROI are set to 0._ <br/> 
     
-  - _The user can set the ROI to a rectangular or polygonal shape, and object detection and action recognition are handled only within the Red ROI border._ <br/>
+  - _The user can set the ROI to a rectangular or polygonal shape, and object detection and action recognition are processed only within the Red ROI border._ <br/>
     - _Green ROI Border &nbsp; : &nbsp; specifying_ <br/>
     - _Yellow ROI Border &nbsp; : &nbsp; modifying_ <br/>
-    - _Red ROI Border &nbsp; : &nbsp; setup complete_ <br/>
+    - _Red ROI Border &nbsp; : &nbsp; setup complete_ <br/><br/><br/>
+    
+ - _**Intrusion and Loitering**_ <br/><br/>
 
 --------------------------
 ### 💻 S/W Development Environment
