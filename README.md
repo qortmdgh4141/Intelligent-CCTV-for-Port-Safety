@@ -41,13 +41,13 @@
     - _The ROI function is implemented based on the binary mask technique in the image processing field._ <br/>
     - _In the mask image, pixels that belong to the ROI are set to 1 and pixels outside the ROI are set to 0._ <br/> 
     
-  - _The user can set the ROI to a rectangular or polygonal shape, and object detection and action recognition are processed only within the Red ROI border._ <br/>
-    - _Green ROI Border &nbsp; : &nbsp; specifying_ <br/>
-    - _Yellow ROI Border &nbsp; : &nbsp; modifying_ <br/>
-    - _Red ROI Border &nbsp; : &nbsp; setup complete_ <br/><br/><br/>
+  - _The user can set the ROI to a rectangular or polygonal shape, and object detection and action recognition are processed only within the Red ROI Border._ <br/>
+    - _Green ROI Border &nbsp;&nbsp; : &nbsp; Specify_ <br/>
+    - _Yellow ROI Border &nbsp; : &nbsp; Modify_ <br/>
+    - _Red ROI Border &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &nbsp; Done_ <br/><br/><br/>
     
  - _**Intrusion and Loitering**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_and_loitering.png?raw=true"  width="1280" height="240"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_loitering.png?raw=true"  width="1280" height="260"> <br/>  
 
     - _Object Detection model detects human intrusions._ <br/>
     
