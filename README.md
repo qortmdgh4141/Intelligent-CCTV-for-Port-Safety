@@ -6,7 +6,7 @@
 
 ### 2. &nbsp; Project Introduction <br/> 
 
-- _The project used a variety of Object Detection and Action Recognition Models based on traditional Computer Vision technique and Deep Neural Network._ <br/><br/>
+- _The project used a variety of object detection and action recognition models based on traditional computer vision technique and deep neural network._ <br/><br/>
 
 - _Based on these deep learning models, the following algorithms are implemented:_ <br/>
 
