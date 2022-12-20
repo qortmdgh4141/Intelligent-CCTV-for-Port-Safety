@@ -47,6 +47,20 @@
     - _Red ROI Border &nbsp; : &nbsp; setup complete_ <br/><br/><br/>
     
  - _**Intrusion and Loitering**_ <br/><br/>
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_and_loitering.png?raw=true"  width="1280" height="240"> <br/>  
+
+    - _Object Detection model detects human intrusions._ <br/>
+    
+    - _If the intruder stays for a long time, it is judged that intruder is  loitering._ <br/>
+    
+    - _Even if the intruder and loiterer appear again after being covered by another object or going out of the video, they are recognized as the same person because the DeepSort algorithm has been applied._ <br/>
+      - _DeepSORT can be defined as the tracking algorithm which tracks objects not only based on the velocity and motion of the object but also the appearance of the object._ <br/>
+      - _Intruder and loiterer are given a unique ID by applying the DeepSort algorithm._ <br/>
+      - _Information of previous intruder and loiterer can be inquired with a unique ID._ <br/><br/><br/>
+
+
+
+ -- 
 
 --------------------------
 ### 💻 S/W Development Environment
