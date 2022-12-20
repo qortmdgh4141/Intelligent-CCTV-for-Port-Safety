@@ -37,11 +37,11 @@
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/region_of_interest_(roi).png?raw=true"  width="1280" height="340"> <br/>
 
   - _Regions of interest (ROI) means the meaningful and important regions in the images._ <br/>
-    - _ROI function eliminates unnecessary areas from the image, improving the processing speed and accuracy of object detection and action recognition._ <br/>
+    - _ROI function eliminates unnecessary areas from the image, improving the processing speed and accuracy of object detection._ <br/>
     - _The ROI function is implemented based on the binary mask technique in the image processing field._ <br/>
     - _In the mask image, pixels that belong to the ROI are set to 1 and pixels outside the ROI are set to 0._ <br/> 
     
-  - _The user can set the ROI to a rectangular or polygonal shape, and object detection and action recognition are processed only within the Red ROI Border._ <br/>
+  - _The user can set the ROI to a rectangular or polygonal shape, and object detection is processed only within the Red ROI Border._ <br/>
     - _Green ROI Border &nbsp;&nbsp; : &nbsp; Specify_ <br/>
     - _Yellow ROI Border &nbsp; : &nbsp; Modify_ <br/>
     - _Red ROI Border &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &nbsp; Done_ <br/><br/><br/>
@@ -49,18 +49,19 @@
  - _**Intrusion and Loitering**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_loitering.png?raw=true"  width="1280" height="260"> <br/>  
 
-    - _Object Detection model detects human intrusions._ <br/>
+    - _Object detection model detects human intrusion._ <br/>
     
     - _If the intruder stays for a long time, it is judged that intruder is  loitering._ <br/>
     
     - _Even if the intruder and loiterer appear again after being covered by another object or going out of the video, they are recognized as the same person because the DeepSort algorithm has been applied._ <br/>
-      - _DeepSORT can be defined as the tracking algorithm which tracks objects not only based on the velocity and motion of the object but also the appearance of the object._ <br/>
-      - _Intruder and loiterer are given a unique ID by applying the DeepSort algorithm._ <br/>
-      - _Information of previous intruder and loiterer can be inquired with a unique ID._ <br/><br/><br/>
+      - _DeepSort can be defined as the tracking algorithm which tracks objects not only based on the velocity and motion of the object but also the appearance of the object._ <br/>
+      - _First, when an intruder appears, the intruder is given a unique ID number, and the intruder's information is stored in the database with the ID number._ <br/>
+      - _When the intruder reappears, it is recognized as the same person by the deep-sort algorithm and given a unique ID number previously given._ 
+      - _It then applies the previous information about the intruder by querying the unique ID number from the database._ <br/><br/><br/>
 
+ - _**Risk of Access to Restricted Areas**_ <br/><br/>
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_loitering.png?raw=true"  width="1280" height="260"> <br/>  
 
-
- -- 
 
 --------------------------
 ### 💻 S/W Development Environment
