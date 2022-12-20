@@ -60,7 +60,20 @@
       - _It then applies the previous information about the intruder by querying the unique ID number from the database._ <br/><br/><br/>
 
  - _**Risk of Access to Restricted Areas**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_loitering.png?raw=true"  width="1280" height="260"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="260"> <br/>  
+
+    - _Based on the measuring distance between objects, a warning or dangerous message is sent to the administrator when a person approaches a restricted area._ <br/>
+        - _The method of setting the restricted area is the same as the method of setting the ROI described above._ <br/>
+        - _When the restricted area is set, the restricted area is displayed on the screen as a white bounding box._ <br/>
+ 
+    - _Based on the measuring distance between objects, a warning or dangerous message is sent to the administrator when a person approaches a restricted area._ <br/>
+        - _The method of setting the restricted area is the same as the method of setting the ROI described above._ <br/>
+        - _When the restricted area is set, the restricted area is displayed on the screen as a white bounding box._ <br/>
+        
+ 
+    - _Based on the measuring distance between objects, a warning or dangerous message is sent to the administrator when a person approaches a restricted area._ <br/>
+        - _The method of setting the restricted area is the same as the method of setting the ROI described above._ <br/>
+        - _When the restricted area is set, the restricted area is displayed on the screen as a white bounding box._ <br/>
 
 
 --------------------------
