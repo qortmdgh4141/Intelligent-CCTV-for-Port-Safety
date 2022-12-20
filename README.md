@@ -7,20 +7,20 @@
 ### 2. &nbsp; Project Introduction <br/> 
 
 - _The project used a variety of object detection and action recognition models based on traditional computer vision technique and deep neural network._ <br/><br/>
-
-- _Based on these deep learning models, the following algorithms are implemented:_ <br/>
+- 
+- _Based on the various deep learning models mentioned above, the following algorithms are implemented :_ <br/>
 
   - _Object Tracking_
   - _Region of Interest (ROI)_
   - _Time Series Data Analysis_
   - _Measuring Distance Between Objects_ <br/><br/>
   
-- _Through the algorithm mentioned above, the following events are determined and analyzed::_ <br/>
+- _Through the algorithms mentioned above, the following events are detected and analyzed :_ <br/>
 
   - _Intrusion and Loitering_
   - _Risk of Access to Restricted Areas_
   - _Risk of Collision Between Workers_
-  - _Risk of Not Wearing Operator Safety Equipment_
+  - _Risk of Not Wearing Worker Safety Equipment_
   - _Fire Accident_
   - _Act of Violence_
   - _Act of Falling_
@@ -28,9 +28,13 @@
 
 - _The analyzed information is stored in the database, and the administrator can quickly grasp the field situation through text and graph-type information provided in real time._ <br/>
 
-  - _Field situation information can be checked not only on PC but also on smartphone._ <br/><br/><br/>
+  - _Field situation information can be checked not only on PC but also on smartphone._ <br/><br/>
+
+- _If these functions are applied to the integrated control center in the port, it will be possible to build an intelligent infrastructure that can efficiently manage and operate. In other words, it can contribute to the introduction of a smart port monitoring system in the future._ <br/><br/><br/>
   
-### 3. &nbsp; Main Function <br/> <br/> 
+### 3. &nbsp; Main Function <br/> 
+- _**Region of Interest (ROI)**_ <br/> <br/>
+<img src="https://github.com/qortmdgh4141/AI_Lost_Pet_Search_App/blob/main/image/main_registration_login.png?raw=true"  width="640" height="240"> <br/> <br/> <br/>
 
 --------------------------
 ### 💻 S/W Development Environment
