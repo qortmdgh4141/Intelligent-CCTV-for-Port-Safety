@@ -110,7 +110,7 @@
     - _Through this, the administrator can prevent safety accidents caused by workers not wearing safety equipment at the work site._ <br/><br/><br/>
  
  - _**Act of Falling**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_collision_between_workers.png?raw=true"  width="1280" height="230"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_falling.png?raw=true"  width="1280" height="180"> <br/>  
 
 --------------------------
 ### 💻 S/W Development Environment
