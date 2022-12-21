@@ -25,7 +25,7 @@
   - _Time Series Data Analysis_ <br/>
     - _This algorithm detects and analyzes time series data using a queue, and its contents are as follows._ <br/>
     - _If the data recognized through the action recognition model is judged to be abnormal behavior, the penalty score is sequentially stored in the queue, which is a linear data structure. (Conversely, if the recognized data is judged to be normal behavior, the adventure score  is stored.)_ <br/>
-    - _At the same time, scores, which are time series data previously stored in the queue, are deleted from the queue by the 'First In First Out' method of the queue._ <br/>
+    - _At the same time, scores, which are time series data previously stored in the queue, are deleted from the queue by the FIFO (First In First Out) method of the queue._ <br/>
     - _While checking the sum of the scores stored in the queue in real time, if the result is an outlier, it is judged that it is currently a very dangerous situation._ <br/>
     
     
