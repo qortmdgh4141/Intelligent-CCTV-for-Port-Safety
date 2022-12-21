@@ -73,7 +73,7 @@
    - _Through this, the administrator can individually detect and analyze whether many people in the port are intruding and loitering._ <br/><br/><br/>
 
  - _**Risk of Access to Restricted Areas**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="180"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="220"> <br/>  
 
     - _The administrator can set the restricted area to a rectangle shape by dragging the mouse._ <br/>
         - _When the restricted area setting is completed, the restricted area is displayed as a white bounding box._ <br/> 
@@ -85,7 +85,7 @@
     - _Through this, the administrator can proactively block people from entering restricted areas within the port._ <br/><br/><br/>
         
  - _**Risk of Collision Between Workers**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_collision_between_worker.png?raw=true"  width="1280" height="230"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_collision_between_worker.png?raw=true"  width="1280" height="160"> <br/>  
 
     - _Based on the algorithm of Measuring Distance Between Objects, if there is a possibility that the safe distance between workers is not secured, a warning or dangerous message is sent to the administrator._ <br/>
         - _Low-Risk States &nbsp;&nbsp; : &nbsp; The safe distance between workers is displayed in yellow._
@@ -107,7 +107,7 @@
     - _Through this, the administrator can prevent safety accidents caused by workers not wearing safety equipment at the work site._ <br/><br/><br/>
  
  - _**Act of Falling**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_falling.png?raw=true"  width="1280" height="180"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_falling.png?raw=true"  width="1280" height="160"> <br/>  
 
 --------------------------
 ### 💻 S/W Development Environment
