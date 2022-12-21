@@ -58,7 +58,7 @@
   - _This ROI algorithm allows administrator to improve the processing speed and accuracy of object detection by removing unnecessary areas from the image._ <br/><br/><br/>
         
  - _**Intrusion and Loitering**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_loitering.png?raw=true"  width="1280" height="240"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_loitering.png?raw=true"  width="1280" height="230"> <br/>  
 
     - _The object detection model detects human intrusion, and if the intruder stays for a long time, it is judged that intruder is  loitering._ <br/>
       - _Intruder &nbsp; : &nbsp; The 'Intrusion' text is displayed in green at the top of the bounding box._ <br/>
