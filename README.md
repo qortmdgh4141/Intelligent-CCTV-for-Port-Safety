@@ -18,11 +18,15 @@
   - _DeepSort_
     - _DeepSort is the tracking algorithm which tracks objects not only based on the velocity and motion of the object but also the appearance of the object._ <br/>
     
-  - _Time Series Data Analysis_ <br/>
-  
   - _Measuring Distance Between Objects_ <br/>
     - _The algorithm detects and analyzes low-risk and high-risk states by measuring the distance between the bounding box centers of objects._ <br/>
-    - _When measuring distance, measure the distance between all objects detected in the image by reflecting the features of the 'complete graph'._<br/>
+    - _When measuring distance, measure the distance between all objects detected in the image by reflecting the features of the 'complete graph'._ <br/>
+
+  - _Time Series Data Analysis_ <br/>
+    - _This algorithm detects and analyzes time series data using a queue, and its contents are as follows._ <br/>
+    - _If the data recognized through the action recognition model is judged to be abnormal behavior, the penalty score is sequentially stored in the queue, which is a linear data structure. (Conversely, if the recognized data is judged to be normal behavior, the adventure score  is stored.)_ <br/>
+    - _At the same time, scores, which are time series data previously stored in the queue, are deleted from the queue by the 'First In First Out' method of the queue._ <br/>
+    - _While checking the sum of the scores stored in the queue in real time, if the result is an outlier, it is judged that it is currently a very dangerous situation._ <br/>
     
     
     
@@ -34,8 +38,8 @@
   - _Risk of Collision Between Workers_
   - _Risk of Not Wearing Worker Safety Equipment_
   - _Fire Accident_
-  - _Act of Violence_
   - _Act of Falling_
+  - _Act of Violence_
   - _Act of Smoking_ <br/><br/>
 
 - _The analyzed information is stored in the database, and the administrator can quickly grasp the field situation through text and graph-type information provided in real time._ <br/>
@@ -105,7 +109,7 @@
          
     - _Through this, the administrator can prevent safety accidents caused by workers not wearing safety equipment at the work site._ <br/><br/><br/>
  
- - _**Act of Violence**_ <br/><br/>
+ - _**Act of Falling**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_collision_between_workers.png?raw=true"  width="1280" height="230"> <br/>  
 
 --------------------------
