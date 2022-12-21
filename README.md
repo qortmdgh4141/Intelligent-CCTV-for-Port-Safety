@@ -47,33 +47,39 @@
     - _Red ROI Border &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &nbsp; Done_ <br/><br/><br/>
     
  - _**Intrusion and Loitering**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_loitering.png?raw=true"  width="1280" height="260"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_loitering.png?raw=true"  width="1280" height="240"> <br/>  
 
     - _Object detection model detects human intrusion._ <br/>
+      - _Display 'Intrusion' text in green at the top of the bounding box_ <br/>
     
     - _If the intruder stays for a long time, it is judged that intruder is  loitering._ <br/>
+      - _Display 'Pedestrian loitering' text in purple at the top of the bounding box_ <br/>
     
     - _Even if the intruder and loiterer appear again after being covered by another object or going out of the video, they are recognized as the same person because the DeepSort algorithm has been applied._ <br/>
       - _DeepSort can be defined as the tracking algorithm which tracks objects not only based on the velocity and motion of the object but also the appearance of the object._ <br/>
       - _First, when an intruder appears, the intruder is given a unique ID number, and the intruder's information is stored in the database with the ID number._ <br/>
-      - _When the intruder reappears, it is recognized as the same person by the deep-sort algorithm and given a unique ID number previously given._ 
+      - _When the intruder reappears, it is recognized as the same person by the deepsort algorithm and given a unique ID number previously given._ 
       - _It then applies the previous information about the intruder by querying the unique ID number from the database._ <br/><br/><br/>
 
  - _**Risk of Access to Restricted Areas**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="260"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="240"> <br/>  
 
-    - _Based on the measuring distance between objects, a warning or dangerous message is sent to the administrator when a person approaches a restricted area._ <br/>
-        - _The method of setting the restricted area is the same as the method of setting the ROI described above._ <br/>
-        - _When the restricted area is set, the restricted area is displayed on the screen as a white bounding box._ <br/>
- 
-    - _Based on the measuring distance between objects, a warning or dangerous message is sent to the administrator when a person approaches a restricted area._ <br/>
-        - _The method of setting the restricted area is the same as the method of setting the ROI described above._ <br/>
-        - _When the restricted area is set, the restricted area is displayed on the screen as a white bounding box._ <br/>
+    - _Based on the algorithm of measuring distance between objects, when a person approaches a restricted area, a warning or dangerous message is sent to the administrator._ <br/>
+        - The algorithm detects and analyzes low-risk and high-risk states by measuring the distance between the person and the restricted area's bounding box center.
+        - Low-Risk States &nbsp;&nbsp; : &nbsp; The border of a person's bounding box is displayed in yellow.
+        - High-Risk States &nbsp; : &nbsp; The border of a person's bounding box is displayed in red.
+            
+    - _The method of setting the restricted area is the same as the method of setting the ROI described above._ <br/>
+        - _When the restricted area setting is completed, the restricted area is displayed as a white bounding box on the screen._ <br/>
         
+ - _**Risk of Collision Between Workers**_ <br/><br/>
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="240"> <br/>  
+
+    - _Based on the algorithm of measuring distance between objects, when a person approaches a restricted area, a warning or dangerous message is sent to the administrator._ <br/>
+        
+
  
-    - _Based on the measuring distance between objects, a warning or dangerous message is sent to the administrator when a person approaches a restricted area._ <br/>
-        - _The method of setting the restricted area is the same as the method of setting the ROI described above._ <br/>
-        - _When the restricted area is set, the restricted area is displayed on the screen as a white bounding box._ <br/>
+ 
 
 
 --------------------------
