@@ -27,9 +27,6 @@
     - _If the data recognized through the action recognition model is judged to be abnormal behavior, the penalty score is sequentially stored in the queue, which is a linear data structure. (Conversely, if the recognized data is judged to be normal behavior, the adventure score  is stored.)_ <br/>
     - _At the same time, scores, which are time series data previously stored in the queue, are deleted from the queue by the FIFO (First In First Out) method of the queue._ <br/>
     - _While checking the sum of the scores stored in the queue in real time, if the result is an outlier, it is judged that it is currently a very dangerous situation._ <br/>
-    
-    
-    
   
 - _Through the algorithms mentioned above, the following events are detected and analyzed :_ <br/>
 
@@ -76,7 +73,7 @@
    - _Through this, the administrator can individually detect and analyze whether many people in the port are intruding and loitering._ <br/><br/><br/>
 
  - _**Risk of Access to Restricted Areas**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="230"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="180"> <br/>  
 
     - _The administrator can set the restricted area to a rectangle shape by dragging the mouse._ <br/>
         - _When the restricted area setting is completed, the restricted area is displayed as a white bounding box._ <br/> 
@@ -88,7 +85,7 @@
     - _Through this, the administrator can proactively block people from entering restricted areas within the port._ <br/><br/><br/>
         
  - _**Risk of Collision Between Workers**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_collision_between_workers.png?raw=true"  width="1280" height="230"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_collision_between_worker.png?raw=true"  width="1280" height="230"> <br/>  
 
     - _Based on the algorithm of Measuring Distance Between Objects, if there is a possibility that the safe distance between workers is not secured, a warning or dangerous message is sent to the administrator._ <br/>
         - _Low-Risk States &nbsp;&nbsp; : &nbsp; The safe distance between workers is displayed in yellow._
