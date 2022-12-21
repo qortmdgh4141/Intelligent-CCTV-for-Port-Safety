@@ -55,7 +55,7 @@
     - _Yellow ROI Border &nbsp; : &nbsp; Modify_ <br/>
     - _Red ROI Border &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &nbsp; Setup Complete_ <br/>
   
-  - _This ROI algorithm allows administrator to improve the processing speed and accuracy of object detection by removing unnecessary areas from the image._ <br/><br/><br/>
+  - _Through this, the administrator can improve the processing speed and accuracy of object detection by removing unnecessary areas from the image._ <br/><br/><br/>
         
  - _**Intrusion and Loitering**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_loitering.png?raw=true"  width="1280" height="230"> <br/>  
@@ -69,7 +69,7 @@
       - _When the intruder reappears, it is recognized as the same person by the DeepSort algorithm and given a unique ID number previously given._ <br/>
       - _It then applies the previous information about the intruder by querying the unique ID number from the database._ <br/>
       
-   - _This function allows administrator to individually detect and analyze whether many people in the port are intruding and loitering._ <br/><br/><br/>
+   - _Through this, the administrator can individually detect and analyze whether many people in the port are intruding and loitering._ <br/><br/><br/>
 
  - _**Risk of Access to Restricted Areas**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="230"> <br/>  
@@ -78,32 +78,35 @@
         - _When the restricted area setting is completed, the restricted area is displayed as a white bounding box._ <br/> 
         
     - _Based on the algorithm of Measuring Distance Between Objects, when a person approaches a restricted area, a warning or dangerous message is sent to the administrator._ <br/>
-        - Low-Risk States &nbsp;&nbsp; : &nbsp; The border of a person's bounding box is displayed in yellow.
-        - High-Risk States &nbsp; : &nbsp; The border of a person's bounding box is displayed in red. <br/>
+        - Low-Risk States &nbsp;&nbsp; : &nbsp; The border of the bounding box is displayed in yellow.  <br/>        
+        - High-Risk States &nbsp; : &nbsp; The border of the bounding box is displayed in red. <br/>
         
-    - _This function allows administrator to proactively block people from entering restricted areas within the port._ <br/><br/><br/>
+    - _Through this, the administrator can proactively block people from entering restricted areas within the port._ <br/><br/><br/>
         
  - _**Risk of Collision Between Workers**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_collision_between_workers.png?raw=true"  width="1280" height="230"> <br/>  
 
     - _Based on the algorithm of Measuring Distance Between Objects, if there is a possibility that the safe distance between workers is not secured, a warning or dangerous message is sent to the administrator._ <br/>
-        - Low-Risk States &nbsp;&nbsp; : &nbsp; The safe distance between workers is displayed in yellow..
-        - High-Risk States &nbsp; : &nbsp; The safe distance between workers is displayed in red.  <br/>
+        - _Low-Risk States &nbsp;&nbsp; : &nbsp; The safe distance between workers is displayed in yellow._
+        - _High-Risk States &nbsp; : &nbsp; The safe distance between workers is displayed in red._  <br/>
      
-    - _This function allows administrator to prevent collision accidents caused by not securing a safe distance in a dense space._ <br/><br/><br/>
-    
+    - _Through this, the administrator can prevent collision accidents caused by the failure of workers to secure a safe distance in a dense space._ <br/><br/><br/>
+        
  - _**Risk of Not Wearing Worker Safety Equipment**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_not_wearing_worker_safety_equipment.png?raw=true"  width="1280" height="450"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_not_wearing_worker_safety_equipment.png?raw=true"  width="1280" height="440"> <br/>  
 
     - _First, the object detection model detects a worker, a safety helmet, and a safety vest._ <br/>
+    
     - _Next, based on the algorithm of Measuring Distance Between Objects, it analyzes whether the worker wears safety equipment._ <br/>
-    - _If the worker is not wearing safety equipment, a warning or dangerous message is sent to the administrator._
-     
-        
-
+    
+    - _If the worker is not wearing safety equipment, a warning or dangerous message is sent to the administrator._ <br/>
+         - Low-Risk States &nbsp;&nbsp; : &nbsp; The Δ symbol is displayed in yellow in the bounding box.<br/>
+         - High-Risk States &nbsp; : &nbsp; The X symbol is displayed in red in the bounding box. <br/>
+         
+    - _Through this, the administrator can prevent safety accidents caused by workers not wearing safety equipment at the work site._ <br/><br/><br/>
  
- 
-
+ - _**Act of Violence**_ <br/><br/>
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_collision_between_workers.png?raw=true"  width="1280" height="230"> <br/>  
 
 --------------------------
 ### 💻 S/W Development Environment
