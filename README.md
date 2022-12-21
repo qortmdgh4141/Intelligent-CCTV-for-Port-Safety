@@ -95,6 +95,9 @@
  - _**Risk of Not Wearing Worker Safety Equipment**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_not_wearing_worker_safety_equipment.png?raw=true"  width="1280" height="450"> <br/>  
 
+    - _First, the object detection model detects a worker, a safety helmet, and a safety vest._ <br/>
+    - _Next, based on the algorithm of Measuring Distance Between Objects, it analyzes whether the worker wears safety equipment._ <br/>
+    - _If the worker is not wearing safety equipment, a warning or dangerous message is sent to the administrator._
      
         
 
