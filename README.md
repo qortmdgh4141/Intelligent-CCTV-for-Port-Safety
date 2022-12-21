@@ -9,11 +9,23 @@
 - _The project used a variety of object detection and action recognition models based on traditional computer vision technique and deep neural network._ <br/><br/>
 
 - _Based on the various deep learning models mentioned above, the following algorithms are implemented :_ <br/>
-
-  - _Object Tracking_
-  - _Region of Interest (ROI)_
-  - _Time Series Data Analysis_
-  - _Measuring Distance Between Objects_ <br/><br/>
+  
+  - _Region of Interest (ROI)_ <br/>
+    - _Regions of interest (ROI) means the meaningful and important regions in the images._ <br/>
+    - _The ROI algorithm is implemented based on the binary mask technique in the image processing field._ <br/>
+    - _In the mask image, pixels that belong to the ROI are set to 1 and pixels outside the ROI are set to 0._ <br/> 
+    
+  - _DeepSort_
+    - _DeepSort is the tracking algorithm which tracks objects not only based on the velocity and motion of the object but also the appearance of the object._ <br/>
+    
+  - _Time Series Data Analysis_ <br/>
+  
+  - _Measuring Distance Between Objects_ <br/>
+    - _The algorithm detects and analyzes low-risk and high-risk states by measuring the distance between the bounding box centers of objects._ <br/>
+    - _When measuring distance, measure the distance between all objects detected in the image by reflecting the features of the 'complete graph'._<br/>
+    
+    
+    
   
 - _Through the algorithms mentioned above, the following events are detected and analyzed :_ <br/>
 
@@ -36,46 +48,50 @@
 - _**Region of Interest (ROI)**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/region_of_interest_(roi).png?raw=true"  width="1280" height="340"> <br/>
 
-  - _Regions of interest (ROI) means the meaningful and important regions in the images._ <br/>
-    - _ROI function eliminates unnecessary areas from the image, improving the processing speed and accuracy of object detection._ <br/>
-    - _The ROI function is implemented based on the binary mask technique in the image processing field._ <br/>
-    - _In the mask image, pixels that belong to the ROI are set to 1 and pixels outside the ROI are set to 0._ <br/> 
-    
-  - _The user can set the ROI to a rectangular or polygonal shape, and object detection is processed only within the Red ROI Border._ <br/>
+  - _The administrator can set the ROI to a rectangle or polygon shape by dragging or clicking the mouse._ <br/>  
+  
+  - _Object detection is processed only within the Red ROI Border._ 
     - _Green ROI Border &nbsp;&nbsp; : &nbsp; Specify_ <br/>
     - _Yellow ROI Border &nbsp; : &nbsp; Modify_ <br/>
-    - _Red ROI Border &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &nbsp; Done_ <br/><br/><br/>
-    
+    - _Red ROI Border &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &nbsp; Setup Complete_ <br/>
+  
+  - _This ROI algorithm allows administrator to improve the processing speed and accuracy of object detection by removing unnecessary areas from the image._ <br/><br/><br/>
+        
  - _**Intrusion and Loitering**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/intrusion_loitering.png?raw=true"  width="1280" height="240"> <br/>  
 
-    - _Object detection model detects human intrusion._ <br/>
-      - _Display 'Intrusion' text in green at the top of the bounding box_ <br/>
-    
-    - _If the intruder stays for a long time, it is judged that intruder is  loitering._ <br/>
-      - _Display 'Pedestrian loitering' text in purple at the top of the bounding box_ <br/>
-    
+    - _The object detection model detects human intrusion, and if the intruder stays for a long time, it is judged that intruder is  loitering._ <br/>
+      - _Intruder &nbsp; : &nbsp; The 'Intrusion' text is displayed in green at the top of the bounding box._ <br/>
+      - _Loiterer &nbsp; : &nbsp; The 'Pedestrian loitering' text is displayed in purple at the top of the bounding box._ <br/>
+
     - _Even if the intruder and loiterer appear again after being covered by another object or going out of the video, they are recognized as the same person because the DeepSort algorithm has been applied._ <br/>
-      - _DeepSort can be defined as the tracking algorithm which tracks objects not only based on the velocity and motion of the object but also the appearance of the object._ <br/>
       - _First, when an intruder appears, the intruder is given a unique ID number, and the intruder's information is stored in the database with the ID number._ <br/>
-      - _When the intruder reappears, it is recognized as the same person by the deepsort algorithm and given a unique ID number previously given._ 
-      - _It then applies the previous information about the intruder by querying the unique ID number from the database._ <br/><br/><br/>
+      - _When the intruder reappears, it is recognized as the same person by the DeepSort algorithm and given a unique ID number previously given._ <br/>
+      - _It then applies the previous information about the intruder by querying the unique ID number from the database._ <br/>
+      
+   - _This function allows administrator to individually detect and analyze whether many people in the port are intruding and loitering._ <br/><br/><br/>
 
  - _**Risk of Access to Restricted Areas**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="240"> <br/>  
 
-    - _Based on the algorithm of measuring distance between objects, when a person approaches a restricted area, a warning or dangerous message is sent to the administrator._ <br/>
-        - The algorithm detects and analyzes low-risk and high-risk states by measuring the distance between the person and the restricted area's bounding box center.
+    - _The administrator can set the restricted area to a rectangle shape by dragging the mouse._ <br/>
+        - _When the restricted area setting is completed, the restricted area is displayed as a white bounding box._ <br/> 
+        
+    - _Based on the algorithm of Measuring Distance Between Objects, when a person approaches a restricted area, a warning or dangerous message is sent to the administrator._ <br/>
         - Low-Risk States &nbsp;&nbsp; : &nbsp; The border of a person's bounding box is displayed in yellow.
-        - High-Risk States &nbsp; : &nbsp; The border of a person's bounding box is displayed in red.
-            
-    - _The method of setting the restricted area is the same as the method of setting the ROI described above._ <br/>
-        - _When the restricted area setting is completed, the restricted area is displayed as a white bounding box on the screen._ <br/>
+        - High-Risk States &nbsp; : &nbsp; The border of a person's bounding box is displayed in red. <br/>
+        
+    - _This function allows administrator to proactively block people from entering restricted areas within the port._ <br/><br/><br/>
         
  - _**Risk of Collision Between Workers**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_access_to_restricted_areas.png?raw=true"  width="1280" height="240"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_collision_between_workers.png?raw=true"  width="1280" height="240"> <br/>  
 
-    - _Based on the algorithm of measuring distance between objects, when a person approaches a restricted area, a warning or dangerous message is sent to the administrator._ <br/>
+    - _Based on the algorithm of Measuring Distance Between Objects, if there is a possibility that the safe distance between workers is not secured, a warning or dangerous message is sent to the administrator._ <br/>
+        - Low-Risk States &nbsp;&nbsp; : &nbsp; The safe distance between workers is displayed in yellow..
+        - High-Risk States &nbsp; : &nbsp; The safe distance between workers is displayed in red.  <br/>
+     
+    - _This function allows administrator to prevent collision accidents caused by not securing a safe distance in a dense space._ <br/><br/><br/>
+     
         
 
  
