@@ -36,9 +36,9 @@
   - _Risk of Collision Between Workers_
   - _Risk of Not Wearing Worker Safety Equipment_
   - _Fire Accident_
+  - _Act of Smoking_
   - _Act of Falling_
-  - _Act of Violence_
-  - _Act of Smoking_ <br/><br/>
+  - _Act of Violence_ <br/><br/>
 
 - _The analyzed information is stored in the database, and the administrator can quickly identify the field situation through text and graph-type information provided in real time._ <br/>
 
@@ -106,7 +106,15 @@
          - High-Risk State &nbsp; : &nbsp; The X symbol is displayed in red in the bounding box. <br/>
          
     - _Through this, the administrator can prevent safety accidents caused by workers not wearing safety equipment at the work site._ <br/><br/><br/>
- 
+
+ - _**Act of Smoking**_ <br/><br/>
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_smoking.png?raw=true" width="1280" height="230"> <br/> 
+   
+    - If the action recognition model recognizes the behavior of smoking or lighting a cigarette, a danger message is sent to the administrator.
+          -  The 'Smoking Action' text is displayed in red at the top of the bounding box. <br/>
+          -  The bounding box filled in purple is displayed. <br/>
+          
+    - _Through this, administrator can prevent fire accidents by quickly stopping people who smoke or light cigarettes in the hazardous areas within the port._<br/><br/><br/>
 
  - _**Act of Falling**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_falling.png?raw=true"  width="1280" height="160"> <br/>  
@@ -146,9 +154,6 @@
       - _After converting to the warning or danger stage, if violent behavior is restrained and not recognized, it is converted back to the safety stage._ <br/>    
 
     - _Through this, administrator can identify and restrain violent situations early._ <br/><br/><br/>
-    
- - _**Act of Smoking**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_smoking.png?raw=true" width="1280" height="230"> <br/> 
     
 --------------------------
 ### 💻 S/W Development Environment
