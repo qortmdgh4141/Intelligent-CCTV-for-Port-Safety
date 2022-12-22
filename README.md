@@ -145,7 +145,7 @@
 
       - _After converting to the warning or danger stage, if violent behavior is restrained and not recognized, it is converted back to the safety stage._ <br/>    
 
-    - _Through this, administrator can identify and contain violent situations early._ <br/><br/><br/>
+    - _Through this, administrator can identify and restrain violent situations early._ <br/><br/><br/>
     
  - _**Act of Smoking**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_smoking.png?raw=true" width="1280" height="230"> <br/> 
