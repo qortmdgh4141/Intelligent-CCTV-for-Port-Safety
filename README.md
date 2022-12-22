@@ -157,24 +157,28 @@
 
 ### 4. &nbsp; Real-Time Information Provision Service <br/><br/>
 
-    - _Since safety accidents occur at unexpected moments, it is important to check the situation at the site in real time and take prompt action._
-    
-    
-### 3. &nbsp; Main Function <br/><br/>
-- _**Region of Interest (ROI)**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/region_of_interest_(roi).png?raw=true"  width="1280" height="340"> <br/>
+  <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/real-time_information_provision_service.png?raw=true"  width="560"> <br/>
 
+  - _Since safety accidents occur at unexpected moments, it is important to check the situation at the site in real time and take prompt action._
+    
   - _The administrator can set the ROI to a rectangle or polygon shape by dragging or clicking the mouse._ <br/>  
-  - 
+  
   - _Therefore, this project provides an information provision service that allows managers to check the situation on the site in real time._ <br/> 
-  - 
+  
   - _First, after analyzing image data photographed by the CCTV camera, the following information is stored in a database._
-
+    - Type of event
+    - Time of occurrence of an event
+    - Types of Warning and Risk Steps
+    - the number of people in the field
+    - Numerical value of abnormal behavior
+    - an image of the scene
+    
+    
 - 이벤트 유형
 - 이벤트 발생 시간 
 - 경고 및 위험 단계 유형 
 - 현장에 있는 사람 수
-- 이상행동의 값
+- 이상행동의 수치 값
 - 현장 상황 이미지
 
 --------------------------
