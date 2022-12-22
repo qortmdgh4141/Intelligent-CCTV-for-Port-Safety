@@ -154,7 +154,29 @@
       - _After converting to the warning or danger stage, if violent behavior is restrained and not recognized, it is converted back to the safety stage._ <br/>    
 
     - _Through this, administrator can identify and restrain violent situations early._ <br/><br/><br/>
+
+### 4. &nbsp; Real-Time Information Provision Service <br/><br/>
+
+    - _Since safety accidents occur at unexpected moments, it is important to check the situation at the site in real time and take prompt action._
     
+    
+### 3. &nbsp; Main Function <br/><br/>
+- _**Region of Interest (ROI)**_ <br/><br/>
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/region_of_interest_(roi).png?raw=true"  width="1280" height="340"> <br/>
+
+  - _The administrator can set the ROI to a rectangle or polygon shape by dragging or clicking the mouse._ <br/>  
+  - 
+  - _Therefore, this project provides an information provision service that allows managers to check the situation on the site in real time._ <br/> 
+  - 
+  - _First, after analyzing image data photographed by the CCTV camera, the following information is stored in a database._
+
+- 이벤트 유형
+- 이벤트 발생 시간 
+- 경고 및 위험 단계 유형 
+- 현장에 있는 사람 수
+- 이상행동의 값
+- 현장 상황 이미지
+
 --------------------------
 ### 💻 S/W Development Environment
 <p>
