@@ -143,7 +143,7 @@
           1.  The 'Dangerous Action' text is displayed in red at the top of the bounding box. <br/>
           2.  The bounding box filled in red is displayed. <br/>
 
-      - _After converting to the warning or danger stage, if violent behavior is restrained and not unrecognized, it is converted back to the safety stage._ <br/>    
+      - _After converting to the warning or danger stage, if violent behavior is restrained and not recognized, it is converted back to the safety stage._ <br/>    
 
     - _Through this, administrator can identify and contain violent situations early._ <br/><br/><br/>
     
