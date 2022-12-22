@@ -19,14 +19,15 @@
     - _DeepSort is the tracking algorithm which tracks objects not only based on the velocity and motion of the object but also the appearance of the object._ <br/>
     
   - _Measuring Distance Between Objects_ <br/>
-    - _The algorithm detects and analyzes low-risk and high-risk states by measuring the distance between the bounding box centers of objects._ <br/>
+    - _The algorithm detects and analyzes low-risk and high-risk state by measuring the distance between the bounding box centers of objects._ <br/>
     - _When measuring distance, measure the distance between all objects detected in the image by reflecting the features of the 'complete graph'._ <br/>
 
   - _Time Series Data Analysis_ <br/>
-    - _This algorithm detects and analyzes time series data using a queue, and its contents are as follows._ <br/>
-    - _If the data recognized through the action recognition model is judged to be abnormal behavior, the penalty score is sequentially stored in the queue, which is a linear data structure. (Conversely, if the recognized data is judged to be normal behavior, the adventure score  is stored.)_ <br/>
-    - _At the same time, scores, which are time series data previously stored in the queue, are deleted from the queue by the FIFO (First In First Out) method of the queue._ <br/>
-    - _While checking the sum of the scores stored in the queue in real time, if the result is an outlier, it is judged that it is currently a very dangerous situation._ <br/>
+    - _This algorithm detects and analyzes time series data using a queue, and its contents are as follows :_ <br/>
+    
+      1. _If the data recognized through the action recognition model is judged to be abnormal behavior, the penalty score is sequentially stored in the queue, which is a linear data structure. (Conversely, if the recognized data is judged to be normal behavior, the adventure score  is stored.)_ <br/>
+      2. _At the same time, scores, which are time series data previously stored in the queue, are deleted from the queue by the FIFO (First In First Out) method of the queue._ <br/>    
+      3. _By analyzing the sum of the scores in the queue in real time, if the value is an outlier, it is judged that it is currently a very dangerous situation_.<br/><br/>
   
 - _Through the algorithms mentioned above, the following events are detected and analyzed :_ <br/>
 
@@ -39,7 +40,7 @@
   - _Act of Violence_
   - _Act of Smoking_ <br/><br/>
 
-- _The analyzed information is stored in the database, and the administrator can quickly grasp the field situation through text and graph-type information provided in real time._ <br/>
+- _The analyzed information is stored in the database, and the administrator can quickly identify the field situation through text and graph-type information provided in real time._ <br/>
 
   - _Field situation information can be checked not only on PC but also on smartphone._ <br/><br/>
 
@@ -78,18 +79,18 @@
     - _The administrator can set the restricted area to a rectangle shape by dragging the mouse._ <br/>
         - _When the restricted area setting is completed, the restricted area is displayed as a white bounding box._ <br/> 
         
-    - _Based on the algorithm of Measuring Distance Between Objects, when a person approaches a restricted area, a warning or dangerous message is sent to the administrator._ <br/>
-        - Low-Risk States &nbsp;&nbsp; : &nbsp; The border of the bounding box is displayed in yellow.  <br/>        
-        - High-Risk States &nbsp; : &nbsp; The border of the bounding box is displayed in red. <br/>
+    - _Based on the algorithm of Measuring Distance Between Objects, when a person approaches a restricted area, a warning or danger message is sent to the administrator._ <br/>
+        - Low-Risk State &nbsp;&nbsp; : &nbsp; The border of the bounding box is displayed in yellow.  <br/>        
+        - High-Risk State &nbsp; : &nbsp; The border of the bounding box is displayed in red. <br/>
         
     - _Through this, the administrator can proactively block people from entering restricted areas within the port._ <br/><br/><br/>
         
  - _**Risk of Collision Between Workers**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_collision_between_worker.png?raw=true"  width="1280" height="160"> <br/>  
 
-    - _Based on the algorithm of Measuring Distance Between Objects, if there is a possibility that the safe distance between workers is not secured, a warning or dangerous message is sent to the administrator._ <br/>
-        - _Low-Risk States &nbsp;&nbsp; : &nbsp; The safe distance between workers is displayed in yellow._
-        - _High-Risk States &nbsp; : &nbsp; The safe distance between workers is displayed in red._  <br/>
+    - _Based on the algorithm of Measuring Distance Between Objects, if there is a possibility that the safe distance between workers is not secured, a warning or danger message is sent to the administrator._ <br/>
+        - _Low-Risk State &nbsp;&nbsp; : &nbsp; The safe distance between workers is displayed in yellow._
+        - _High-Risk State &nbsp; : &nbsp; The safe distance between workers is displayed in red._  <br/>
      
     - _Through this, the administrator can prevent collision accidents caused by the failure of workers to secure a safe distance in a dense space._ <br/><br/><br/>
         
@@ -100,15 +101,34 @@
     
     - _Next, based on the algorithm of Measuring Distance Between Objects, it analyzes whether the worker wears safety equipment._ <br/>
     
-    - _If the worker is not wearing safety equipment, a warning or dangerous message is sent to the administrator._ <br/>
-         - Low-Risk States &nbsp;&nbsp; : &nbsp; The Δ symbol is displayed in yellow in the bounding box.<br/>
-         - High-Risk States &nbsp; : &nbsp; The X symbol is displayed in red in the bounding box. <br/>
+    - _If the worker is not wearing safety equipment, a warning or danger message is sent to the administrator._ <br/>
+         - Low-Risk State &nbsp;&nbsp; : &nbsp; The Δ symbol is displayed in yellow in the bounding box.<br/>
+         - High-Risk State &nbsp; : &nbsp; The X symbol is displayed in red in the bounding box. <br/>
          
     - _Through this, the administrator can prevent safety accidents caused by workers not wearing safety equipment at the work site._ <br/><br/><br/>
  
+
  - _**Act of Falling**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_falling.png?raw=true"  width="1280" height="160"> <br/>  
 
+    - _First, the action recognition model recognizes the behavior of a worker who fall due to a fall accident in real time._ <br/>
+
+    - _Next, based on the algorithm of Time Series Data Analysis, the current situation is judged as a safety stage, a warning stage, or a danger stage._ <br/>
+
+      - _The warning stage is a situation where it is judged that a minor accident has occurred._ <br/>
+          1.  The 'Warning Action' text is displayed in orange at the top of the bounding box. <br/>
+          2.  The bounding box filled in orange is displayed. <br/>
+
+      - _If it is judged that the injury is so serious that the worker cannot move, the warning stage is  converted to the danger stage._  <br/>
+          1.  The 'Dangerous Action' text is displayed in red at the top of the bounding box. <br/>
+          2.  The bounding box filled in red is displayed. <br/>
+
+      - _After converting to the warning or danger stage, if the worker has regained consciousness and stands up, it is converted back to the safety stage._ <br/>    
+
+    - _Through this, administrator can prioritize and respond to more dangerous situations even if multiple accidents occur simultaneously._ <br/><br/><br/>
+
+ - _**Act of Violence**_ <br/><br/>
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_falling.png?raw=true"  width="1280" height="160"> <br/>  
 --------------------------
 ### 💻 S/W Development Environment
 <p>
