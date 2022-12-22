@@ -111,7 +111,7 @@
  - _**Act of Falling**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_falling.png?raw=true"  width="1280" height="160"> <br/>  
 
-    - _First, the action recognition model recognizes the behavior of a worker who fall due to a fall accident in real time._ <br/>
+    - _First, the action recognition model recognizes the behavior of a worker who have fallen due to a fall accident in real time._ <br/>
 
     - _Next, based on the algorithm of Time Series Data Analysis, the current situation is judged as a safety stage, a warning stage, or a danger stage._ <br/>
 
@@ -128,7 +128,28 @@
     - _Through this, administrator can prioritize and respond to more dangerous situations even if multiple accidents occur simultaneously._ <br/><br/><br/>
 
  - _**Act of Violence**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_falling.png?raw=true"  width="1280" height="160"> <br/>  
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_violence.png?raw=true"  width="1280" height="160"> <br/> 
+
+    - _First, the action recognition model recognizes the behavior of making violent contact with another person's body in real time.._ <br/>
+
+    - _Next, based on the algorithm of Time Series Data Analysis, the current situation is judged as a safety stage, a warning stage, or a danger stage._ <br/>
+
+      - _The warning stage is a situation that is judged to be minor violence or contact._ <br/>
+            
+          1.  The 'Warning Action' text is displayed in orange at the top of the bounding box. <br/>
+          2.  The bounding box filled in orange is displayed. <br/>
+
+      - _If it is judged that the violence is serious and needs to be restrained, the warning stage is converted to a danger stage._  <br/>
+          1.  The 'Dangerous Action' text is displayed in red at the top of the bounding box. <br/>
+          2.  The bounding box filled in red is displayed. <br/>
+
+      - _After converting to the warning or danger stage, if violent behavior is restrained and not unrecognized, it is converted back to the safety stage._ <br/>    
+
+    - _Through this, administrator can identify and contain violent situations early._ <br/><br/><br/>
+    
+ - _**Act of Smoking**_ <br/><br/>
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_violence.png?raw=true"  width="1280" height="160"> <br/>     
+    
 --------------------------
 ### 💻 S/W Development Environment
 <p>
