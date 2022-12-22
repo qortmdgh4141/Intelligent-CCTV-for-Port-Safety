@@ -130,7 +130,7 @@
  - _**Act of Violence**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_violence.png?raw=true"  width="1280" height="160"> <br/> 
 
-    - _First, the action recognition model recognizes the behavior of making violent contact with another person's body in real time.._ <br/>
+    - _First, the action recognition model recognizes the behavior of making violent contact with another person's body in real time._ <br/>
 
     - _Next, based on the algorithm of Time Series Data Analysis, the current situation is judged as a safety stage, a warning stage, or a danger stage._ <br/>
 
@@ -148,7 +148,7 @@
     - _Through this, administrator can identify and contain violent situations early._ <br/><br/><br/>
     
  - _**Act of Smoking**_ <br/><br/>
-<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_violence.png?raw=true"  width="1280" height="160"> <br/>     
+<img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_smoking.png?raw=true" width="1280" height="230"> <br/> 
     
 --------------------------
 ### 💻 S/W Development Environment
