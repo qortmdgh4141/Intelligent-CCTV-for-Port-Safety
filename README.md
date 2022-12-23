@@ -2,7 +2,7 @@
 - _The PDF file is a paper of Intelligent CCTV for Port Safety published by KIPS(Korean Information Processing Society)._ <br/> <br/> <br/> 
 
 ### 1. &nbsp; Background of Development <br/> 
-- _Recently, CCTV-related technologies have been used in various ways in our daily lives, such as security and safety accident prevention. However, traditional CCTV cameras record more unnecessary information than is needed when a problem occurs. In addition, it is difficult to fully recognize and judge the field situation only with existing CCTV cameras. The Korea Safety and Health Agency announced that six deaths occurred every year at domestic ports during 2011-2021. It shows the limitations that existing CCTV cameras cannot solve safety accidents and human casualties in domestic ports. In order to solve these limitations, I devised "Intelligent CCTV for Port Safety" that can quickly and accurately respond to dangerous situations while checking the site situation in real time._ <br/><br/><br/>
+- _Recently, CCTV-related technologies have been used in various ways in our daily lives, such as security and safety accident prevention. However, traditional CCTV cameras record more unnecessary information than is needed when a problem occurs. In addition, it is difficult to fully recognize and judge the site only with existing CCTV cameras. The Korea Safety and Health Agency announced that six deaths occurred every year at domestic ports during 2011-2021. It shows the limitations that existing CCTV cameras cannot solve safety accidents and human casualties in domestic ports. In order to solve these limitations, I devised "Intelligent CCTV for Port Safety" that can quickly and accurately respond to dangerous situations while checking the site in real time._ <br/><br/><br/>
 
 ### 2. &nbsp; Project Introduction <br/> 
 
@@ -40,9 +40,9 @@
   - _Act of Falling_
   - _Act of Violence_ <br/><br/>
 
-- _The analyzed information is stored in the database, and the administrator can quickly identify the field situation through text and graph-type information provided in real time._ <br/>
+- _The analyzed information is stored in the database, and the administrator can quickly identify the current situation through text and graph-type information provided in real time._ <br/>
 
-  - _Field situation information can be checked not only on PC but also on smartphone._ <br/><br/>
+  - _The information can be checked not only on PC but also on smartphone._ <br/><br/>
 
 - _If these functions are applied to the integrated control center in the port, it will be possible to build an intelligent infrastructure that can efficiently manage and operate. In other words, it can contribute to the introduction of a smart port monitoring system in the future._ <br/><br/><br/>
   
@@ -111,8 +111,8 @@
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_smoking.png?raw=true" width="1280" height="230"> <br/> 
    
     - If the action recognition model recognizes the behavior of smoking or lighting a cigarette, a danger message is sent to the administrator.
-          -  The 'Smoking Action' text is displayed in red at the top of the bounding box. <br/>
-          -  The bounding box filled in purple is displayed. <br/>
+        -  The 'Smoking Action' text is displayed in red at the top of the bounding box. <br/>
+        -  The bounding box filled in purple is displayed. <br/>
           
     - _Through this, administrator can prevent fire accidents by quickly stopping people who smoke or light cigarettes in the hazardous areas within the port._<br/><br/><br/>
 
@@ -159,28 +159,19 @@
 
   <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/real-time_information_provision_service.png?raw=true"  width="560"> <br/>
 
-  - _Since safety accidents occur at unexpected moments, it is important to check the situation at the site in real time and take prompt action._
+  - _Since safety accidents occur at unexpected moments, it is important to check the site in real time and take prompt action._
     
-  - _The administrator can set the ROI to a rectangle or polygon shape by dragging or clicking the mouse._ <br/>  
-  
-  - _Therefore, this project provides an information provision service that allows managers to check the situation on the site in real time._ <br/> 
+  - _Therefore, this project provides an information provision service that allows managers to check the site in real time._ <br/> 
   
   - _First, after analyzing image data photographed by the CCTV camera, the following information is stored in a database._
-    - Type of event
-    - Time of occurrence of an event
-    - Types of Warning and Risk Steps
-    - the number of people in the field
-    - Numerical value of abnormal behavior
-    - an image of the scene
+    - Image of the scene
+    - Number of People on Site
+    - ID Numbers of People on Site
+    - Safety Numerical Values at The Site
+    - Type of Event
+    - Time of Occurrence of the Event
+    - Level of Warning and Danger Stage
     
-    
-- 이벤트 유형
-- 이벤트 발생 시간 
-- 경고 및 위험 단계 유형 
-- 현장에 있는 사람 수
-- 이상행동의 수치 값
-- 현장 상황 이미지
-
 --------------------------
 ### 💻 S/W Development Environment
 <p>
