@@ -164,13 +164,13 @@
   - _Therefore, this project provides an information provision service that allows managers to check the site in real time._ <br/> 
   
   - _First, after analyzing image data photographed by the CCTV camera, the following information is stored in a database._
-    - Image of the scene
-    - Number of People on Site
-    - ID Numbers of People on Site
-    - Safety Numerical Values at The Site
-    - Type of Event
-    - Time of Occurrence of the Event
-    - Level of Warning and Danger Stage
+    1. Image of the site 
+    2. The Number of People 
+    3. People's unique ID numbers
+    4. Safety Numerical Values 
+    5. Type of Event
+    6. Time of Occurrence of the Event
+    7. Level of Warning and Danger Stage
     
 --------------------------
 ### 💻 S/W Development Environment
