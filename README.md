@@ -155,7 +155,7 @@
 
     - _Through this, administrator can identify and restrain violent situations early._ <br/><br/><br/>
 
-### 4. &nbsp; Real-Time Information Provision Service <br/><br/>
+### 4. &nbsp; Real-Time Information Provision System <br/><br/>
 
   <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/real-time_information_provision_service.png?raw=true"  width="560"> <br/>
 
@@ -164,14 +164,13 @@
   - _Therefore, this project provides an information provision service that allows managers to check the site in real time._ <br/> 
   
   - _First, after analyzing image data photographed by the CCTV camera, the following information is stored in a database._
-    1. Image of the site 
-    2. The Number of People 
-    3. People's unique ID numbers
-    4. Safety Numerical Values 
-    5. Type of Event
-    6. Time of Occurrence of the Event
-    7. Level of Warning and Danger Stage
-    
+    - Image of the On-Site 
+    - The Number of People at the On-Site  
+    - Safety Numerical Values at the On-site
+    - Identification Number of People at the On-Site
+    - Type of Event
+    - Occurrence Time of Event
+    - Warning and Danger Stage of Event
 --------------------------
 ### 💻 S/W Development Environment
 <p>
