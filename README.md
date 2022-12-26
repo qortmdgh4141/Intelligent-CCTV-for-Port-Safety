@@ -173,7 +173,8 @@
     - Warning and Danger Stage of Event
   
   - _Then, the information stored in the database is provided to the administrator's PC monitor or application in the form of text, image, graph, etc._ <br/>
-  
+    - _You can check the source code and information of the application in the following storage: <br/> https://github.com/qortmdgh4141/Real-time_Information_Provision_App.git_<br/>
+    
   - _Through this, administrator can check the situation in real time anywhere, not limited to places, and respond quickly to problems in the site._ <br/> <br/> <br/>
   
 ### 5. &nbsp; YOLO Model Training Strategies Using Transfer-Learning & Fine-Tuning <br/> <br/>
