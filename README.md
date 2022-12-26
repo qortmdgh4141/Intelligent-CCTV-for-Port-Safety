@@ -161,7 +161,7 @@
 
   - _Since safety accidents occur at unexpected moments, it is important to check the site in real time and take prompt action._
     
-  - _Therefore, this project provides an information provision service that allows managers to check the site in real time._ <br/> 
+  - _Therefore, this project provides an information provision system that allows managers to check the site in real time._ <br/> 
   
   - _First, after analyzing image data photographed by the CCTV camera, the following information is stored in a database._ <br/> 
     - Image of the On-Site 
