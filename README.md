@@ -163,7 +163,7 @@
     
   - _Therefore, this project provides an information provision service that allows managers to check the site in real time._ <br/> 
   
-  - _First, after analyzing image data photographed by the CCTV camera, the following information is stored in a database._
+  - _First, after analyzing image data photographed by the CCTV camera, the following information is stored in a database._ <br/> 
     - Image of the On-Site 
     - The Number of People at the On-Site  
     - Safety Numerical Values at the On-site
@@ -171,6 +171,11 @@
     - Type of Event
     - Occurrence Time of Event
     - Warning and Danger Stage of Event
+  
+  - _Then, the information stored in the database is provided to the administrator's PC monitor or application in the form of text, image, graph, etc._ <br/>
+  
+  - _Through this, administrator can check the situation in real time anywhere, not limited to places, and respond quickly to problems in the site._ <br/> <br/> <br/>
+  
 --------------------------
 ### 💻 S/W Development Environment
 <p>
