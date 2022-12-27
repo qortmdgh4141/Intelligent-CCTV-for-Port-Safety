@@ -44,7 +44,7 @@
 
   - _The information can be checked not only on PC but also on smartphone._ <br/><br/>
 
-- _If these functions are applied to the integrated control center in the port, it will be possible to build an intelligent infrastructure that can efficiently manage and operate. In other words, it can contribute to the introduction of a smart port monitoring system in the future._ <br/><br/><br/>
+- _If these functions are applied to the integrated control center in the port, a smart port monitoring system capable of efficient management and operation can be established._ <br/><br/><br/>
   
 ### 3. &nbsp; Main Function <br/><br/>
 - _**Region of Interest (ROI)**_ <br/><br/>
