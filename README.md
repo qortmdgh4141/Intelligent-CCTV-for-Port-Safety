@@ -163,7 +163,7 @@
     
   - _Therefore, this project provides an information provision system that allows managers to check the site in real time._ <br/> 
   
-  - _First, after analyzing image data photographed by the CCTV camera, the following information is stored in a database._ <br/> 
+  - _First, after analyzing image data collected through intelligent CCTV, the following information is stored in a database._ <br/> 
     - Image of the On-Site 
     - The Number of People at the On-Site  
     - Safety Numerical Values at the On-site
