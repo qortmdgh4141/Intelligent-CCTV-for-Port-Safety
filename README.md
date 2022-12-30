@@ -1,10 +1,11 @@
-## 📹 Intelligent CCTV for Port Safety
-- _The PDF file is a paper of Intelligent CCTV for Port Safety published by KIPS(Korean Information Processing Society)._ <br/> <br/> <br/> 
+# 📹 Intelligent CCTV for Port Safety 
+<br/> 
 
-### 1. &nbsp; Background of Development <br/> 
+### 1. &nbsp; Background of Development <br/><br/> 
+
 - _Recently, CCTV-related technologies have been used in various ways in our daily lives, such as security and safety accident prevention. However, traditional CCTV cameras record more unnecessary information than is needed when a problem occurs. In addition, it is difficult to fully recognize and judge the site only with existing CCTV cameras. The Korea Safety and Health Agency announced that six deaths occurred every year at domestic ports during 2011-2021. It shows the limitations that existing CCTV cameras cannot solve safety accidents and human casualties in domestic ports. In order to solve these limitations, I devised "Intelligent CCTV for Port Safety" that can quickly and accurately respond to dangerous situations while checking the site in real time._ <br/><br/><br/>
 
-### 2. &nbsp; Project Introduction <br/> 
+### 2. &nbsp; Project Introduction <br/><br/>   
 
 - _The project used a variety of object detection and action recognition models based on traditional computer vision technique and deep neural network._ <br/><br/>
 
@@ -15,7 +16,7 @@
     - _The ROI algorithm is implemented based on the binary mask technique in the image processing field._ <br/>
     - _In the mask image, pixels that belong to the ROI are set to 1 and pixels outside the ROI are set to 0._ <br/> 
     
-  - _DeepSort_
+  - _DeepSort_ <br/> 
     - _DeepSort is the tracking algorithm which tracks objects not only based on the velocity and motion of the object but also the appearance of the object._ <br/>
     
   - _Measuring Distance Between Objects_ <br/>
@@ -31,13 +32,13 @@
   
 - _Through the algorithms mentioned above, the following events are detected and analyzed :_ <br/>
 
-  - _Intrusion and Loitering_
-  - _Risk of Access to Restricted Areas_
-  - _Risk of Collision Between Workers_
-  - _Risk of Not Wearing Worker Safety Equipment_
-  - _Fire Accident_
-  - _Act of Smoking_
-  - _Act of Falling_
+  - _Intrusion and Loitering_ <br/> 
+  - _Risk of Access to Restricted Areas_ <br/> 
+  - _Risk of Collision Between Workers_ <br/> 
+  - _Risk of Not Wearing Worker Safety Equipment_ <br/> 
+  - _Fire Accident_ <br/> 
+  - _Act of Smoking_ <br/> 
+  - _Act of Falling_ <br/> 
   - _Act of Violence_ <br/><br/>
 
 - _The analyzed information is stored in the database, and the administrator can quickly identify the current situation through text and graph-type information provided in real time._ <br/>
@@ -47,12 +48,13 @@
 - _If these functions are applied to the integrated control center in the port, a smart port monitoring system capable of efficient management and operation can be established._ <br/><br/><br/>
   
 ### 3. &nbsp; Main Function <br/><br/>
+
 - _**Region of Interest (ROI)**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/region_of_interest_(roi).png?raw=true"  width="1280" height="340"> <br/>
 
   - _The administrator can set the ROI to a rectangle or polygon shape by dragging or clicking the mouse._ <br/>  
   
-  - _Object detection is processed only within the Red ROI Border._ 
+  - _Object detection is processed only within the Red ROI Border._ <br/> 
     - _Green ROI Border &nbsp;&nbsp; : &nbsp; Specify_ <br/>
     - _Yellow ROI Border &nbsp; : &nbsp; Modify_ <br/>
     - _Red ROI Border &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : &nbsp; Setup Complete_ <br/>
@@ -110,7 +112,7 @@
  - _**Act of Smoking**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/act_of_smoking.png?raw=true" width="1280" height="230"> <br/> 
    
-    - If the action recognition model recognizes the behavior of smoking or lighting a cigarette, a danger message is sent to the administrator.
+    - If the action recognition model recognizes the behavior of smoking or lighting a cigarette, a danger message is sent to the administrator. <br/> 
         -  The 'Smoking Action' text is displayed in red at the top of the bounding box. <br/>
         -  The bounding box filled in purple is displayed. <br/>
           
@@ -155,43 +157,43 @@
 
     - _Through this, administrator can identify and restrain violent situations early._ <br/><br/><br/>
 
-### 4. &nbsp; Real-Time Information Provision System <br/><br/>
+### 4. &nbsp; Real-Time Information Provision System <br/>
 
   <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/real-time_information_provision_system.png?raw=true"  width="560"> <br/>
 
-  - _Since safety accidents occur at unexpected moments, it is important to check the site in real time and take prompt action._
+  - _Since safety accidents occur at unexpected moments, it is important to check the site in real time and take prompt action._ <br/> 
     
   - _Therefore, this project provides an information provision system that allows managers to check the site in real time._ <br/> 
   
   - _First, after analyzing image data collected through Intelligent CCTV for Port Safety the following information is stored in a database._ <br/> 
-    - Image of the On-Site 
-    - The Number of People at the On-Site  
-    - Safety Numerical Values at the On-site
-    - Identification Number of People at the On-Site
-    - Type of Event
-    - Occurrence Time of Event
-    - Warning and Danger Stage of Event
+  
+    - Image of the On-Site <br/> 
+    - The Number of People at the On-Site <br/>
+    - Safety Numerical Values at the On-site <br/>
+    - Identification Number of People at the On-Site <br/>
+    - Type of Event <br/>
+    - Occurrence Time of Event <br/>
+    - Warning and Danger Stage of Event <br/>
   
   - _Then, the information stored in the database is provided to the administrator's PC monitor or application in the form of text, image, graph, etc._ <br/>
     - _You can obtain the source code and information for the application from the following repository: <br/> https://github.com/qortmdgh4141/Real-time_Information_Provision_App.git_ <br/>
     
   - _Through this, administrator can check the situation in real time anywhere, not limited to places, and respond quickly to problems in the site._ <br/> <br/> <br/>
   
-### 5. &nbsp; YOLO Model Training Strategies Using Transfer-Learning & Fine-Tuning <br/> <br/>
+### 5. &nbsp; YOLO Model Training Strategies Using Transfer-Learning & Fine-Tuning <br/><br/>
 
-- _**Transfer-Learning & Fine-Tuning Definition**_
-  - _Transfer learning consists of taking features learned on one problem, and leveraging them on a new, similar problem._
-  - _Transfer learning is usually done for tasks where your dataset has too little data to train a full-scale model from scratch._
-  - _The most common incarnation of transfer learning in the context of deep learning is the following workflow._
-    1. _Take layers from a previously trained model._
-    2. _Freeze them, so as to avoid destroying any of the information they contain during future training rounds._
-    3. _Add some new, trainable layers on top of the frozen layers. They will learn to turn the old features into predictions on a new dataset._
-    4. _Train the new layers on your dataset._
+- _**Transfer-Learning & Fine-Tuning Definition**_ <br/>
+
+  - _Transfer learning consists of taking features learned on one problem, and leveraging them on a new, similar problem._ <br/>
+  - _Transfer learning is usually done for tasks where your dataset has too little data to train a full-scale model from scratch._ <br/>
+  - _The most common incarnation of transfer learning in the context of deep learning is the following workflow._ <br/>
+    1. _Take layers from a previously trained model._ <br/>
+    2. _Freeze them, so as to avoid destroying any of the information they contain during future training rounds._ <br/>
+    3. _Add some new, trainable layers on top of the frozen layers. They will learn to turn the old features into predictions on a new dataset._ <br/>
+    4. _Train the new layers on your dataset._ <br/>
   - _A last, optional step, is fine-tuning, which consists of unfreezing the entire model you obtained above (or part of it), and re-training it on the new data with a very low learning rate._ <br/> <br/> 
   
-  
  - _**My Fine-Tuning Strategy**_ <br/> <br/>
- 
  <img src="https://github.com/qortmdgh4141/AI_Lost_Pet_Search_App/blob/main/image/transfer_learning_fine_tuning_2.png?raw=true"  width="1320" height="490"> <br/>
    
 |Strategy|Method |Feature|
@@ -206,8 +208,9 @@
  - _**Results Based on 3 Strategies**_ <br/> <br/>
   <img src="https://github.com/qortmdgh4141/AI_Lost_Pet_Search_App/blob/main/image/transfer_learning_fine_tuning.png?raw=true"  width="1280" height="340"> <br/> <br/> 
     - _**Strategy 1** &nbsp; : &nbsp; Yellow, &nbsp;&nbsp;&nbsp;&nbsp; **Strategy 2 &nbsp; :** &nbsp; Pink, &nbsp;&nbsp;&nbsp;&nbsp; **Strategy 3 &nbsp; :** &nbsp; Purple_  <br/> 
-    - _Strategy 1 shows the best results._
-    - _I think the reasons for this result are as follows._
+    
+    - _Strategy 1 shows the best results._ <br/>
+    - _I think the reasons for this result are as follows._ <br/>
     - _The dataset I used is a large dataset and has little resemblance to the dataset of pre-trained models_ <br/> <br/> <br/>
     
 --------------------------
