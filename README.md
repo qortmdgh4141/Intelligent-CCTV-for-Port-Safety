@@ -12,8 +12,8 @@
 - _Based on the various deep learning models mentioned above, the following algorithms are implemented :_ <br/>
   
   - _Region of Interest (ROI)_ <br/>
-    - _Regions of interest (ROI) means the meaningful and important regions in the images._ <br/>
-    - _The ROI algorithm is implemented based on the binary mask technique in the image processing field._ <br/>
+    - _Regions of interest (ROI) means a meaningful and important regions in an images._ <br/>
+    - _The ROI algorithm is implemented based on a binary mask, one of image processing techniques._ <br/>
     - _In the mask image, pixels that belong to the ROI are set to 1 and pixels outside the ROI are set to 0._ <br/> 
     
   - _DeepSort_ <br/> 
@@ -21,7 +21,7 @@
     
   - _Measuring Distance Between Objects_ <br/>
     - _The algorithm detects and analyzes low-risk and high-risk state by measuring the distance between the bounding box centers of objects._ <br/>
-    - _When measuring distance, measure the distance between all objects detected in the image by reflecting the features of the 'complete graph'._ <br/>
+    - _When measuring distance, measure the distance between all objects detected in the image by reflecting the characteristics of a complete graph._ <br/>
 
   - _Time Series Data Analysis_ <br/>
     - _This algorithm detects and analyzes time series data using a queue, and its contents are as follows :_ <br/>
