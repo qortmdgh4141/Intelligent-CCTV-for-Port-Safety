@@ -94,7 +94,7 @@
         - _Low-Risk State &nbsp;&nbsp; : &nbsp; The safe distance between workers is displayed in yellow._
         - _High-Risk State &nbsp; : &nbsp; The safe distance between workers is displayed in red._  <br/>
      
-    - _Through this, the administrator can prevent collision accidents caused by the failure of workers to secure a safe distance in a dense space._ <br/><br/><br/>
+    - _Through this, the administrator can prevent collision accidents caused by the failure of workers to secure the safe distance in a dense space._ <br/><br/><br/>
         
  - _**Risk of Not Wearing Worker Safety Equipment**_ <br/><br/>
 <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/risk_of_not_wearing_worker_safety_equipment.png?raw=true"  width="1280" height="440"> <br/>  
