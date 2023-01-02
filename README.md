@@ -81,7 +81,7 @@
     - _The administrator can set the restricted area to a rectangle shape by dragging the mouse._ <br/>
         - _When the restricted area setting is completed, the restricted area is displayed as a white bounding box._ <br/> 
         
-    - _Based on the algorithm of Measuring Distance Between Objects, when a person approaches a restricted area, a warning or danger message is sent to the administrator._ <br/>
+    - _Based on the algorithm of Measuring Distance Between Objects, when a person approaches the restricted area, a warning or danger message is sent to the administrator._ <br/>
         - Low-Risk State &nbsp;&nbsp; : &nbsp; The border of the bounding box is displayed in yellow.  <br/>        
         - High-Risk State &nbsp; : &nbsp; The border of the bounding box is displayed in red. <br/>
         
