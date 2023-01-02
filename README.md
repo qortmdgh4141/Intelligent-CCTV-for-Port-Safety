@@ -70,7 +70,7 @@
 
     - _Even if the intruder and loiterer appear again after being covered by another object or going out of the video, they are recognized as the same person because the DeepSort algorithm has been applied._ <br/>
       - _First, when an intruder appears, the intruder is given a unique ID number, and the intruder's information is stored in the database with the ID number._ <br/>
-      - _When the intruder reappears, it is recognized as the same person by the DeepSort algorithm and given a unique ID number previously given._ <br/>
+      - _When the intruder reappears, it is recognized as the same person by the DeepSort algorithm and given the unique ID number previously given._ <br/>
       - _It then applies the previous information about the intruder by querying the unique ID number from the database._ <br/>
       
    - _Through this, the administrator can individually detect and analyze whether many people in the port are intruding and loitering._ <br/><br/><br/>
