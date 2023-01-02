@@ -158,7 +158,7 @@
     - _Through this, administrator can identify and restrain violent situations early._ <br/><br/><br/>
 
 ### 4. &nbsp; Real-Time Information Provision System <br/><br/>
-  <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/real_time_graph.png?raw=true"  width="640"> <br/><br/>
+  <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/real_time_graph.png?raw=true"  width="640"> <br/>
   
   - _Since safety accidents occur at unexpected moments, it is important to check the site in real time and take prompt action._ <br/> 
     
