@@ -160,9 +160,9 @@
 ### 4. &nbsp; Real-Time Information Provision System <br/><br/>
   <img src="https://github.com/qortmdgh4141/Intelligent_CCTV_for_Port_Safety/blob/main/image/real_time_graph.png?raw=true"  width="640"> <br/>
   
-  - _Since safety accidents occur at unexpected moments, it is important to check the site in real time and take prompt action._ <br/> 
+  - _Since safety accidents occur at unexpected moments, it is important to check the site in real time and take prompt action._ <br/> <br/>
     
-  - _Therefore, this project provides an information provision system that allows managers to check the site in real time._ <br/> 
+  - _Therefore, this project provides an information provision system that allows managers to check the site in real time._ <br/> <br/>
   
   - _First, after analyzing image data collected through Intelligent CCTV for Port Safety the following information is stored in a database._ <br/> 
   
@@ -172,7 +172,7 @@
     - Identification Number of People at the On-Site <br/>
     - Type of Event <br/>
     - Occurrence Time of Event <br/>
-    - Warning and Danger Stage of Event <br/>
+    - Warning and Danger Stage of Event <br/><br/>
   
   - _Then, the information stored in the database is provided to the administrator's PC monitor or application in the form of text, image, graph, etc._ <br/>
     - _You can obtain the source code and information for the application from the following repository: <br/> https://github.com/qortmdgh4141/Real-time_Information_Provision_App.git_ <br/>
@@ -190,7 +190,7 @@
     2. _Freeze them, so as to avoid destroying any of the information they contain during future training rounds._ <br/>
     3. _Add some new, trainable layers on top of the frozen layers. They will learn to turn the old features into predictions on a new dataset._ <br/>
     4. _Train the new layers on your dataset._ <br/>
-  - _A last, optional step, is fine-tuning, which consists of unfreezing the entire model you obtained above (or part of it), and re-training it on the new data with a very low learning rate._ <br/> <br/> 
+  - _A last, optional step, is fine-tuning, which consists of unfreezing the entire model you obtained above (or part of it), and re-training it on the new data with a very low learning rate._ <br/><br/><br/> 
   
  - _**My Fine-Tuning Strategy**_ <br/> <br/>
  <img src="https://github.com/qortmdgh4141/AI_Lost_Pet_Search_App/blob/main/image/transfer_learning_fine_tuning_2.png?raw=true"  width="1320" height="490"> <br/>
@@ -201,13 +201,12 @@
 |_**Strategy 2**_|_Train some layers and leave the others frozen. In a CNN architecture, lower layers refer to general features (problem independent), while higher layers refer to specific features (problem dependent). In this case, we have to adjust the weights of the network._|_This option is useful when we have a small dataset and a large number of parameters, we need to leave more layers frozen to avoid overfitting. On the other hand, if the dataset is large and the number of parameters is small, it is possible to improve the model by training more layers to the new task._|
 |_**Strategy 3**_|_Freeze the convolutional base. In this situation, we have an extreme case of the train/freeze trade-off. The rationale behind it is to keep the original form of the convolutional base to use as input for the classifier. By this way, the pre-trained model plays the role of a feature extractor._|_It can be interesting for small datasets or if the problem solved by the pre-trained model is similar to the one we are working on._| 
 
-<br/> 
+<br/><br/> 
 
 
  - _**Results Based on 3 Strategies**_ <br/> <br/>
   <img src="https://github.com/qortmdgh4141/AI_Lost_Pet_Search_App/blob/main/image/transfer_learning_fine_tuning.png?raw=true"  width="1280" height="340"> <br/> <br/> 
     - _**Strategy 1** &nbsp; : &nbsp; Yellow, &nbsp;&nbsp;&nbsp;&nbsp; **Strategy 2 &nbsp; :** &nbsp; Pink, &nbsp;&nbsp;&nbsp;&nbsp; **Strategy 3 &nbsp; :** &nbsp; Purple_  <br/> 
-    
     - _Strategy 1 shows the best results._ <br/>
     - _I think the reasons for this result are as follows._ <br/>
     - _The dataset I used is a large dataset and has little resemblance to the dataset of pre-trained models_ <br/> <br/> <br/>
