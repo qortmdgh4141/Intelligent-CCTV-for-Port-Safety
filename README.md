@@ -1,6 +1,6 @@
 # 📹  Intelligent CCTV for Port Safety 
 <br/> 
- 
+  
 ### 1. &nbsp; Background of Development <br/><br/> 
 
 - _Recently, CCTV-related technologies have been used in various ways in our daily lives, such as security and safety accident prevention. However, traditional CCTV cameras record more unnecessary information than is needed when a problem occurs. In addition, it is difficult to fully recognize and judge the site only with existing CCTV cameras. The Korea Safety and Health Agency announced that six deaths occurred every year at domestic ports during 2011-2021. It shows the limitations that existing CCTV cameras cannot solve safety accidents and human casualties in domestic ports. In order to solve these limitations, I devised ""Intelligent CCTV for Port Safety & Real-Time Information Provision System" that can quickly and accurately respond to dangerous situations while checking the site in real time._ <br/><br/><br/>
