@@ -1,4 +1,4 @@
-# 📹  Intelligent CCTV for Port Safety     
+# 📹  Intelligent CCTV for Port Safety      
 <br/> 
    
 ### 1. &nbsp; Background of Development <br/><br/> 
